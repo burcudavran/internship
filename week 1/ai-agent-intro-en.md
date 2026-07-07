@@ -107,3 +107,58 @@ The key differences between AI agents and standard chatbots lie in their level o
 
 - **Chatbot:** They cannot access external tools or systems to compensate for their lack of knowledge.
 - **AI Agent:** They can autonomously access external tools or systems to interact with the outside world and keep themselves updated.
+
+## Why an Agent Is Not Just a Prompt-Writing System
+
+The fundamental reason AI agents are not merely prompt-writing systems is that a prompt is a one-time, passive instruction, whereas an agent is an autonomous architecture capable of achieving its own goals, making decisions, using external tools, and interacting with its environment.
+
+The key differences that distinguish an AI agent from a simple prompt-based system:
+
+One of the most important differences is that prompt creation and processing is only a sub-component of the agent architecture, not the entirety of it. A goal-driven agent generates its own prompts instead of waiting for external prompts.
+
+A prompt is a command that only tells the model what to do at a specific moment and depends on human intervention. Agents, on the other hand, are fully autonomous; they make and execute the decisions needed to achieve their goals.
+
+Prompt-based interactions are typically stateless by nature — the system has no obligation to remember history. Each command is processed as if seen for the first time. AI agents, however, have multi-structured memory systems, including 4 types of memory. This allows them to maintain context throughout a task, learn from past actions, and act according to the current state.
+
+A prompt is merely a text string confined within the language model, unable to be affected by the outside world. Agents are autonomous structures connected to external applications and systems.
+
+A prompt is singular and instantaneous. A single response is produced for the given command, and the process ends. Agents, through paradigms like ReAct, continuously operate in a perception, decision, and action loop.
+
+In summary, a prompt is a static, text-based command that tells a model what to do, while an AI agent is complex software that organizes these commands on its own, updates its state, and exchanges data with the outside world.
+
+## Core Components of Agent Architecture
+
+**Agent:** An autonomous system that can perceive its environment, make decisions, and take action in the external world to achieve a specific goal. Each agent has its own role, internal state, and objective.
+
+**Tool:** External resources or functions that agents use to interact with the outside world and expand their capabilities. They can use tools such as databases, web searches, APIs, graphical or programmatic interfaces, or other agents to access up-to-date information or perform digital actions. The autonomous invocation and use of these tools (tool calling) enables agents to solve real-world problems.
+
+**Memory:** The core component that allows agents to maintain context throughout a task, learn from past experiences, and improve over time by adapting. This mechanism prevents agents from repeating mistakes, adapts to user preferences, and enables more accurate, personalized behavior.
+
+**Workflow:** The autonomous sequence of task steps that an agent designs and orders to solve a complex problem and achieve its goal. The process begins with creating a plan, breaking the task into subtasks, and taking action. Workflows can be managed by reasoning paradigms and may also encompass multi-agent systems.
+
+**MCP:** An open-source, standardized communication protocol that enables AI applications to connect to external systems, data sources, and tools.
+
+## MCP (Model Context Protocol)
+
+It works like a universal USB-C that connects electronic devices. It enables AI models to interact with external systems in a standardized way.
+
+The biggest limitation of Large Language Models (LLMs) is that they are static — confined to the data they were trained on and unable to autonomously communicate with the outside world. MCP acts as a bridge that removes these limitations.
+
+MCP is the fundamental standard that allows AI to break free from dependence on static training data, pull real-time data from external sources, fill knowledge gaps, and keep itself updated. However, MCP is not a closed box limited to LLMs; it is a fully open-source and universal protocol.
+
+### Core Architecture and How It Works
+
+It consists of 3 main components:
+
+**MCP Host:** The layer where the model and user interact. It hosts the LLM and the interface the user interacts with. It runs one or more MCP Clients in the background.
+
+**MCP Client:** Runs inside the Host. It translates the model's requests into a format MCP understands, and MCP's requests into a format the model understands. It also discovers available MCP servers. It typically runs as a library or SDK embedded within the agent framework being used.
+
+**MCP Server:** An external service that provides context, data, or external tool capabilities to the LLM. These are small, isolated services that translate external data sources or tools into the common language understood by the protocol.
+
+### What It Provides and Why It Matters
+
+- Prevents LLMs from hallucinating (which occurs when relying solely on training data) by enabling connections to reliable, real-time external data sources.
+- Transforms AI from a mere text-generating chatbot into a system capable of true autonomy.
+- Eliminates fragmented integration efforts by providing a single, standard protocol. This reduces development time, costs, and complexity.
+- Being standard and open-source, it enables model switching without requiring major changes to the host system.

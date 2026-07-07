@@ -6,7 +6,7 @@ Karmaşık görevleri ve belirli hedefleri yerine getirmek için yapay zeka kull
 
 Temelinde Büyük Dil Modellerini (LLM) barındırır. Bu sayede metin, ses, video, kod gibi çok modlu verileri işleyebilir. Ancak geleneksel LLM'ler statiktir; yalnızca eğitildikleri veriler ile sınırlıdırlar. Canlı veri veya otonom eyleme geçemezler.
 
-AI Agentler ise dinamik yapıya sahiptirler; LLM'in akıl yürütme becerisini arka planda araç çağırma (tool/function calling), hafıza (memory) ve dinamik iş akışları (workflow) ile birleştirir ve eğitildiği verilerin ötesine geçer. Bu sayede otonom ve karmaşık verileri yerine getirebilirler.
+AI Agentler ise dinamik yapıya sahiptirler; LLM'in akıl yürütme becerisini arka planda araç çağırma (tool/function calling), hafıza (memory) ve dinamik iş akışları (workflow) ile birleştirir ve eğitildiği verilerin ötesine geçer. Bu sayede otonom ve karmaşık görevleri yerine getirebilirler.
 
 **Tool Calling:** Yapay zeka araçlarının kapasitelerini genişletmek, çevreleriyle etkileşime girmek ve görevleri yerine getirmek amacıyla harici sistemlere veya kaynaklara otonom başvurmasıdır.
 
@@ -48,7 +48,7 @@ Ajanın geçmiş etkileşimleri, kullanıcı tercihlerini ve görev sırasında 
 
 - **Anısal Hafıza:** Ajanın geçmişte gerçekleştirdiği belirli eylemleri, senaryoları ve bu senaryolardan çıkardığı dersleri (başarı veya başarısızlık) birer anı gibi saklaması.
 
-- **Ortak Hafıza:** Çoklu ajan mimarilerinde (multi-agent) mimarilerinde, farklı ajanların birbirleriyle paylaştıkları ortak bilgi havuzu.
+- **Ortak Hafıza:** Çoklu ajan mimarilerinde (multi-agent), farklı ajanların birbirleriyle paylaştıkları ortak bilgi havuzu.
 
 ### Otonom Eylem (Autonomy)
 
@@ -107,3 +107,58 @@ Yapay zeka ajanları (AI agents) ile standart sohbet botları (chatbots) arasın
 
 - **Chatbot:** Bilgi eksikliklerini kapatabilecek dış araçlara veya sistemlere erişim sağlayamazlar.
 - **AI Agent:** Dış dünyayla etkileşime girmek ve kendilerini güncellemek için otonom şekilde dış araç veya sistemlere erişim sağlayabilirler.
+
+## Agent Neden Sadece Prompt Yazan Bir Sistem Değildir?
+
+Yapay zeka araçlarının yalnızca prompt yazan sistemler olmamasının temel nedeni, promptun sadece tek seferlik ve pasif bir talimat olması, ajanın ise kendi hedeflerini gerçekleştirebilen, kararlar alan, dış araçları kullanabilen ve çevreyle iletişime geçebilen otonom bir mimari olmasıdır.
+
+Bir yapay zeka ajanını basit bir prompt tabanlı sistemden ayıran temel özellikler:
+
+En önemli farklardan biri, prompt oluşturma ve işlemenin, ajan mimarisinin tamamı değil, sadece alt bir parçası olmasıdır. Hedef odaklı çalışan bir ajan, dışarıdan prompt beklemek yerine gerekli promptları kendisi üretir.
+
+Prompt modele sadece belirli bir anda ne yapması gerektiğini söyleyen ve insan müdahalesine bağımlı bir komuttur. Ajanlar ise tamamen otonomdur ve hedeflerine ulaşmak için alınması gereken kararları kendileri alırlar ve uygularlar.
+
+Prompt tabanlı etkileşimler yapıları gereği genellikle durumsuzdur, yani sistemin geçmişi hatırlama zorunluluğu yoktur. Her komut sisteme ilk kez görülüyormuş gibi işlenir. Yapay zeka ajanları ise 4 tür hafıza olmak üzere çok yapılı bellek yapılarına sahiptir. Bu sayede bir görev gerçekleştirildiği süre boyunca bağlamı korurlar, geçmiş eylemlerden ders çıkarırlar ve güncel duruma göre hareket edebilirler.
+
+Bir prompt yalnızca dil modelinin içerisine hapsolmuş bir metin dizisidir, dış dünyadan etkilenemez. Ajanlar ise dış uygulamalara ve sistemlere bağlanmış otonom yapılardır.
+
+Prompt tekil ve anlıktır. Verilen komuta tek bir cevap üretilir ve işlem sonlandırılır. Ajanlar ise ReAct gibi paradigmalar sayesinde sürekli olarak algılama, karar verme ve eylem döngüsü içinde çalışırlar.
+
+Özetle prompt; bir modele ne yapması gerektiğini anlatan metin tabanlı statik bir komutken, yapay zeka ajanı; bu komutları kendi başına organize eden, durumunu güncelleyen, dış dünyayla veri alışverişi yapan kompleks bir yazılımdır.
+
+## Agent Mimarisinin Temel Parçaları
+
+**Agent:** Belirli bir hedefi gerçekleştirmek için çevresini algılayabilen, kararlar alabilen ve dış dünyada eyleme geçebilen otonom bir sistemdir. Her ajanın kendine ait bir rolü, içsel durumu ve ulaşmak istediği hedefi vardır.
+
+**Tool:** Ajanların dış çevreyle etkileşime girmek ve kapasitelerini arttırmak için kullandıkları dış kaynaklar veya işlevlerdir. Güncel bilgilere ulaşmak veya dijital eylemler gerçekleştirmek için veritabanları, web aramaları, API'ler, grafiksel veya program tabanlı arayüzler veya diğer ajanlar gibi araçları kullanabilirler. Bu araçların otonom bir şekilde çağrılması ve kullanılması (tool calling) ajanların gerçek dünyadaki problemleri çözmesini mümkün kılar.
+
+**Memory:** Ajanların görev süresince bağlamı korumasını, geçmiş deneyimlerden öğrenmesini ve zamanla uyum sağlayarak kendini geliştirmesini sağlayan temel bileşendir. Bu mekanizma sayesinde ajanlar hatalarını tekrarlamaz, kullanıcı tercihlerine adapte olur ve çok daha isabetli, kişiselleştirilmiş davranışlar gerçekleştirir.
+
+**Workflow:** İş akışları, ajanın karmaşık bir problemi çözmek ve amaca ulaşmak için tasarladığı ve sıraya koyduğu otonom görev adımları. Süreç; bir planın oluşturulması, görevin alt görevlere ayrılması ve eyleme geçilmesi ile başlar. İş akışları akıl yürütme paradigmaları ile yönetilebilir. İş akışları aynı zamanda çoklu ajan sistemlerini de kapsayabilir.
+
+**MCP:** Yapay zeka uygulamalarının dış sistemlere, veri kaynaklarına ve araçlara bağlanmasını sağlayan açık kaynaklı ve standartlaştırılmış bir iletişim protokolüdür.
+
+## MCP (Model Context Protocol)
+
+Elektronik cihazları birbirine bağlayan evrensel bir USB-C gibi çalışır. Yapay zeka modellerinin dış sistemlerle standart bir yolla etkileşime girmesini sağlar.
+
+Büyük dil modellerinin (LLM) en büyük kısıtlaması, statik olmaları yani eğitildikleri bilgilerle sınırlı kalmaları ve dış dünyayla otonom olarak iletişime geçememeleridir. MCP bu kısıtlamaları ortadan kaldıran bir köprü görevi görür.
+
+Yapay zekanın eğitildiği tarihte kalan statik bilgilere bağımlı olmaktan kurtulup, dış kaynaklardan gerçek zamanlı veriler çekerek bilgi eksikliklerini tamamlamasını ve kendini güncellemesini sağlayan şey temel standart MCP'dir. Ancak MCP, sadece büyük dil modelleriyle sınırlı kapalı bir kutu değildir; tamamen açık kaynaklı ve evrensel bir protokoldür.
+
+### Temel Mimari ve Çalışma Prensibi
+
+3 temel bileşenden oluşur:
+
+**MCP Host (Ana Sistem):** Modelin ve kullanıcının etkileşime girdiği katmandır. LLM'i ve kullanıcının etkileşime geçtiği arayüzü barındırır. Arka planda bir veya daha fazla MCP Client çalıştırır.
+
+**MCP Client (İstemci):** Host içinde çalışır. Modelin isteklerini MCP'nin anlayacağı formata, MCP'nin isteklerini modelin anlayacağı formata çevirir. Ayrıca kullanılabilir MCP sunucularını bulur. Genellikle kullanılan agent framework'ünün içine gömülü bir kütüphane veya SDK olarak çalışır.
+
+**MCP Server (Sunucu):** LLM'e bağlam, veri veya dış araç yetenekleri sağlayan harici hizmettir. Dış dünyadaki veri kaynaklarını veya araçları, protokolün anladığı ortak dile çeviren küçük, izole edilmiş servislerdir.
+
+### Neler Sağlar ve Neden Önemlidir
+
+- Güvenilir ve gerçek zamanlı dış veri kaynaklarına bağlanmalarını sağlayarak, LLM'lerin sadece eğitim verilerine dayanarak halüsinasyon yaşamasını engeller.
+- Yapay zekayı sadece soru metin üreten bir sohbet botu olmaktan çıkarıp, gerçek otonomiyi mümkün kılar.
+- Tek ve standart bir protokol sunarak dağınık entegrasyon süresini ortadan kaldırır. Bu sayede geliştirme süresi, maliyetler ve karmaşıklık azaltılır.
+- Standart ve açık kaynaklı olduğu için ana sistemde büyük değişiklikler yapılmadan model değişikliğini mümkün kılar.
