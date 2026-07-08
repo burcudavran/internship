@@ -1,5 +1,18 @@
 # Hafta 1: Temel Kavramlar ve Microsoft Agent Framework'e Giriş
 
+## İçindekiler
+
+- [AI Agent Nedir?](#ai-agent-nedir)
+- [LLM (Büyük Dil Modeli) Nedir?](#llm-büyük-dil-modeli-nedir)
+- [AI Ajanlarını Güçlü Kılan Temel Özellikler](#ai-ajanlarını-güçlü-kılan-temel-özellikler)
+- [Yapay Zeka Ajanı Türleri](#yapay-zeka-ajanı-türleri)
+- [Chatbot ile AI Agent Arasındaki Farklar](#chatbot-ile-ai-agent-arasındaki-farklar)
+- [Agent Neden Sadece Prompt Yazan Bir Sistem Değildir?](#agent-neden-sadece-prompt-yazan-bir-sistem-değildir)
+- [Agent Mimarisinin Temel Parçaları](#agent-mimarisinin-temel-parçaları)
+- [MCP (Model Context Protocol)](#mcp-model-context-protocol)
+- [Microsoft Agent Framework](#microsoft-agent-framework)
+- [ChatGPT ile Microsoft Agent Framework Arasındaki Farklar](#chatgpt-ile-microsoft-agent-framework-arasındaki-farklar)
+
 ## AI Agent Nedir?
 
 Karmaşık görevleri ve belirli hedefleri yerine getirmek için yapay zeka kullanılan, müdahale gerektirmeden kendi başına karar alabilen (özerk) yazılımlardır. Karar verme, problem çözme, dış ortamlarla etkileşime girme ve hedefe yönelik eylemleri gerçekleştirme gibi geniş kapsamlı yeteneklere sahiptir.
@@ -211,7 +224,15 @@ Yapay zeka ajanları, LLM'lerin statik doğasını aşmak ve karmaşık süreçl
 
 Temel amaç; otonom, karmaşık görevleri yerine getiren araçlar geliştirmek, tek seferlik komutların ötesinde dış sistemlerle etkileşime geçen, hafızası olan ve karmaşık görevleri otonom olarak çözen sistemler kurulmasıdır.
 
-Semantic Kernel ve AutoGen'in doğrudan yeni neslidir. AutoGen'in tekli ve çoklu ajan oluşturmadaki basitliğini, Semantic Kernel'in kurumsal düzeydeki güçlü özelliklerini tek bir çatı altında birleştirir.
+### Semantic Kernel ve AutoGen ile İlişkisi
+
+Microsoft Agent Framework, Microsoft'un daha önce geliştirdiği iki yapay zeka ajan çerçevesi olan Semantic Kernel ve AutoGen'in birleşiminden doğmuş, onların doğrudan yeni neslidir.
+
+**AutoGen**, Microsoft Research'in AI Frontiers Lab'ı tarafından geliştirilen, çoklu ajan orkestrasyonuna odaklanmış deneysel bir framework'tü. Geliştiricilerin birkaç satır kodla ajan oluşturmasına, ajanlar arası grup sohbeti (group chat), yansıtma (reflection) ve facilitator/worker gibi gelişmiş çoklu ajan pattern'lerini uygulamasına olanak tanıyordu. Ancak deneysel yapısı nedeniyle kurumsal düzeyde gözlemlenebilirlik (observability), güvenlik, resmi destek ve uzun süreli kararlılık gibi özellikleri eksikti. AutoGen artık bakım modundadır; yeni özellik geliştirilmemekte, topluluk tarafından yönetilmektedir. Microsoft, yeni projeler için AutoGen yerine Microsoft Agent Framework'ü önermekte ve mevcut AutoGen kullanıcılarını geçiş yapmaya yönlendirmektedir.
+
+**Semantic Kernel**, kurumsal uygulamalar için tasarlanmış, üretime hazır bir SDK idi. .NET, Python ve Java dillerini destekler. Telemetry (OpenTelemetry ile dağıtık izleme), middleware (istek/yanıt süreçlerine müdahale), tip güvenliği, oturum tabanlı durum yönetimi, çok sayıda veritabanı ve model sağlayıcı desteği gibi kurumsal özellikler sunuyordu. Bu yönüyle üretim ortamları için idealdi ancak çoklu ajan orkestrasyonu konusunda AutoGen kadar esnek ve zengin değildi. Semantic Kernel desteklenmeye devam edecek, kritik hatalar ve güvenlik güncellemeleri alacaktır ancak yeni özelliklerin çoğu Microsoft Agent Framework'e eklenecektir. Semantic Kernel'i Semantic Kernel v1.x, Microsoft Agent Framework'ü ise Semantic Kernel v2.0 olarak düşünmek mümkündür.
+
+**Microsoft Agent Framework**, AutoGen'in basit ve esnek ajan oluşturma yeteneklerini, Semantic Kernel'in kurumsal düzeydeki sağlam altyapısıyla tek bir çatı altında birleştirir. Her iki framework'ün aynı ekibi tarafından geliştirilmekte olup, AutoGen ve Semantic Kernel'den edinilen tüm deneyim ve geri bildirimlerin ışığında inşa edilmiştir.
 
 ### Temel Mimari Bileşenler
 
@@ -244,3 +265,51 @@ Ajanları sadece prototip olmaktan çıkarıp canlı (üretim) ortamına güvenl
 **Ara yazılımlar (Middleware):** Ajanların istek ve yanıt süreçleri arasına girerek özel işlem hatları oluşturmasını, hataların yönetilmesini ve güvenliğin sağlanmasını kolaylaştırır.
 
 **Döngüdeki insan (Human-in-the-Loop - HITL):** Özellikle iş akışlarında kritik kararlar alınmadan önce sistemin otomatik olarak duraklatılıp bir insandan onay veya girdi beklemesini sağlayan yerleşik mekanizmalardır.
+
+## ChatGPT ile Microsoft Agent Framework Arasındaki Farklar
+
+Her ikisi de yapay zeka kullanmasına rağmen ChatGPT ve Microsoft Agent Framework, amaç, kontrol düzeyi ve kullanım senaryoları açısından temelde farklı araçlardır.
+
+### Amaç
+ChatGPT, OpenAI tarafından geliştirilmiş, genel amaçlı bir sohbet ürünüdür. Kullanıcı prompt girer, model yanıt üretir. Microsoft Agent Framework ise geliştiricilerin kendi otonom ajanlarını inşa etmesi için tasarlanmış bir geliştirme çerçevesidir.
+
+### Kontrol ve Özelleştirme
+ChatGPT kapalı bir üründür. Kullanıcı modeli, araçları veya davranış kurallarını değiştiremez. MAF'te ise her şey açık ve özelleştirilebilir: hangi modelin kullanılacağı, hangi araçların çağrılacağı, ajanın talimatları, middleware katmanları ve iş akışları tamamen geliştiricinin kontrolündedir.
+
+### Otonomi
+ChatGPT reaktif çalışır. Her yanıt bir kullanıcı prompt'una bağlıdır. Araç çağırabilir (functions/plugins) ancak bunu kendi kararıyla değil, kullanıcının talebiyle yapar. Kendi başına plan yapamaz veya bir hedef doğrultusunda adım adım ilerleyemez. MAF ajanları ise proaktiftir; ReAct gibi paradigmalar sayesinde düşünme, eyleme geçme ve gözlemleme döngüsünde otonom olarak çalışır, dış araçları kullanır ve hedefe ulaşana kadar adımları kendisi yönetir.
+
+### Çoklu Ajan Desteği
+ChatGPT tek kullanıcılı ve tekil bir asistan deneyimi sunar. MAF ise birden fazla ajanın birbiriyle iletişim kurduğu, uzmanlaştığı ve ortak bir hedef için iş birliği yaptığı çoklu ajan sistemleri kurmaya olanak tanır.
+
+### Hafıza
+ChatGPT oturum bazlı kısa süreli hafızaya sahiptir. Oturum kapanınca geçmiş kaybolur. MAF'te hafıza yapılandırılabilir ve kalıcıdır: kısa süreli, uzun süreli, anısal ve ortak hafıza olmak üzere dört tür bellek desteği sunar.
+
+### Kurumsal Özellikler
+ChatGPT kurumsal kullanım için sınırlı denetim mekanizmalarına sahiptir. MAF ise checkpointing, observability, middleware ve human-in-the-loop gibi özelliklerle üretime hazır bir altyapı sunar.
+
+### Kullanım Senaryosu
+ChatGPT, hızlı bilgi edinme, fikir üretme ve genel amaçlı sohbet için uygundur. MAF, belirli bir iş sürecini otonom olarak yürütmesi gereken, dış sistemlerle entegre çalışan ve kurumsal gereksinimleri olan uygulamalar için tercih edilir.
+
+Özetle
+
+| Özellik | ChatGPT | Microsoft Agent Framework |
+|---|---|---|
+| **Amaç** | Genel amaçlı sohbet ürünü | Otonom ajan geliştirme çerçevesi |
+| **Kontrol** | Kapalı ürün, özelleştirilemez | Tamamen açık ve özelleştirilebilir |
+| **Otonomi** | Reaktif, kullanıcı prompt'una bağlı | Proaktif, ReAct döngüsüyle otonom |
+| **Çoklu Ajan** | Tek kullanıcılı, tekil asistan | Çoklu ajan, uzmanlaşma ve iş birliği |
+| **Hafıza** | Oturum bazlı, kısa süreli | 4 tür: kısa/uzun süreli, anısal, ortak |
+| **Kurumsal** | Sınırlı denetim | Checkpointing, observability, middleware, HITL |
+| **Kullanım** | Hızlı bilgi, fikir üretme, sohbet | Otonom iş süreçleri, dış sistem entegrasyonu |
+
+## Kaynakça ve İleri Okuma
+
+- [Microsoft Agent Framework (GitHub)](https://github.com/microsoft/agent-framework)
+- [Microsoft Agent Framework Workflows](https://learn.microsoft.com/tr-tr/agent-framework/workflows/)
+- [Semantic Kernel (Microsoft)](https://learn.microsoft.com/en-us/semantic-kernel/)
+- [AutoGen (Microsoft Research)](https://github.com/microsoft/autogen)
+- [Model Context Protocol (MCP) — Getting Started](https://modelcontextprotocol.io/docs/getting-started/intro)
+- [What Are Large Language Models? (IBM)](https://www.ibm.com/think/topics/large-language-models)
+- [What is a Large Language Model? (Stanford HAI)](https://hai.stanford.edu/ai-definitions/what-is-a-llm)
+- [GitHub Copilot Workspace](https://github.com/features/copilot)

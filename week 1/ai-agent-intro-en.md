@@ -1,5 +1,18 @@
 # Week 1: Fundamental Concepts and Introduction to Microsoft Agent Framework
 
+## Table of Contents
+
+- [What is an AI Agent?](#what-is-an-ai-agent)
+- [What is an LLM (Large Language Model)?](#what-is-an-llm-large-language-model)
+- [Key Features That Make AI Agents Powerful](#key-features-that-make-ai-agents-powerful)
+- [Types of AI Agents](#types-of-ai-agents)
+- [Differences Between Chatbots and AI Agents](#differences-between-chatbots-and-ai-agents)
+- [Why an Agent Is Not Just a Prompt-Writing System](#why-an-agent-is-not-just-a-prompt-writing-system)
+- [Core Components of Agent Architecture](#core-components-of-agent-architecture)
+- [MCP (Model Context Protocol)](#mcp-model-context-protocol)
+- [Microsoft Agent Framework](#microsoft-agent-framework)
+- [Differences Between ChatGPT and Microsoft Agent Framework](#differences-between-chatgpt-and-microsoft-agent-framework)
+
 ## What is an AI Agent?
 
 AI agents are autonomous software systems that use artificial intelligence to perform complex tasks and achieve specific goals without requiring human intervention. They possess a wide range of capabilities including decision-making, problem-solving, interacting with external environments, and executing goal-oriented actions.
@@ -211,7 +224,15 @@ AI agents are developed to overcome the static nature of LLMs and manage complex
 
 The main goal is to build autonomous systems that perform complex tasks — going beyond one-time commands to interact with external systems, maintain memory, and solve complex problems autonomously.
 
-It is the direct next generation of Semantic Kernel and AutoGen, combining AutoGen's simplicity in creating single and multi-agent systems with Semantic Kernel's enterprise-grade capabilities under a single roof.
+### Relationship with Semantic Kernel and AutoGen
+
+Microsoft Agent Framework is the direct successor of two previous Microsoft AI agent frameworks: Semantic Kernel and AutoGen. It builds upon the foundations of both, unifying their strengths into a single platform.
+
+**AutoGen** was an experimental framework developed by Microsoft Research's AI Frontiers Lab, focused on multi-agent orchestration. It allowed developers to create agents in just a few lines of code and implement advanced multi-agent patterns such as group chat, reflection, and facilitator/worker setups. However, due to its experimental nature, it lacked enterprise-grade features like observability, security, official support, and long-term stability. AutoGen is now in maintenance mode — no new features are being developed, and it is managed by the community. Microsoft recommends Microsoft Agent Framework for new projects and encourages existing AutoGen users to migrate.
+
+**Semantic Kernel** is a production-ready SDK designed for enterprise applications, supporting .NET, Python, and Java. It offered enterprise features such as telemetry (distributed tracing via OpenTelemetry), middleware (intercepting request/response flows), type safety, session-based state management, and broad database and model provider support. While ideal for production environments, it was not as flexible or rich as AutoGen when it came to multi-agent orchestration. Semantic Kernel will continue to receive critical bug fixes and security updates, but most new features will be added to Microsoft Agent Framework. One way to think about it: Semantic Kernel is v1.x, while Microsoft Agent Framework is v2.0 of the same vision.
+
+**Microsoft Agent Framework** combines AutoGen's simple and flexible agent creation capabilities with Semantic Kernel's enterprise-grade robust infrastructure under a single roof. It is developed by the same team behind both frameworks and is built on all the experience and feedback gathered from Semantic Kernel and AutoGen.
 
 ### Core Architectural Components
 
@@ -244,3 +265,49 @@ To take agents from prototype to production with confidence, MAF inherits the fo
 **Middleware:** Allows custom pipelines to be created between agent requests and responses, making error handling and security management easier.
 
 **Human-in-the-Loop (HITL):** Built-in mechanisms that automatically pause workflows before critical decisions and wait for human approval or input.
+
+## Differences Between ChatGPT and Microsoft Agent Framework
+
+Although both use artificial intelligence, ChatGPT and Microsoft Agent Framework are fundamentally different tools in terms of purpose, level of control, and use cases.
+
+### Purpose
+ChatGPT is a general-purpose conversational product developed by OpenAI. The user enters a prompt and the model generates a response. Microsoft Agent Framework, on the other hand, is a development framework designed for developers to build their own autonomous agents.
+
+### Control and Customization
+ChatGPT is a closed product. Users cannot change the model, tools, or behavior rules. In MAF, everything is open and customizable: which model to use, which tools to call, agent instructions, middleware layers, and workflows are all under the developer's control.
+
+### Autonomy
+ChatGPT operates reactively. Every response depends on a user prompt. It can call tools (functions/plugins), but only when the user requests it, not on its own initiative. It cannot make plans or progress step by step toward a goal autonomously. MAF agents are proactive; through paradigms like ReAct, they work autonomously in a think-act-observe loop, use external tools, and manage steps themselves until reaching the goal.
+
+### Multi-Agent Support
+ChatGPT offers a single-user, single-assistant experience. MAF enables building multi-agent systems where multiple agents communicate, specialize, and collaborate toward a common goal.
+
+### Memory
+ChatGPT has session-based short-term memory. When the session ends, the history is lost. In MAF, memory is configurable and persistent, supporting four types: short-term, long-term, episodic, and shared memory.
+
+### Enterprise Features
+ChatGPT has limited control mechanisms for enterprise use. MAF offers a production-ready infrastructure with features like checkpointing, observability, middleware, and human-in-the-loop.
+
+### Use Case
+ChatGPT is suitable for quick information retrieval, brainstorming, and general-purpose conversation. MAF is preferred for applications that need to autonomously execute specific business processes, integrate with external systems, and meet enterprise requirements.
+
+| Feature | ChatGPT | Microsoft Agent Framework |
+|---|---|---|
+| **Purpose** | General-purpose conversational product | Autonomous agent development framework |
+| **Control** | Closed product, not customizable | Fully open and customizable |
+| **Autonomy** | Reactive, depends on user prompts | Proactive, autonomous via ReAct loop |
+| **Multi-Agent** | Single-user, single assistant | Multi-agent, specialization & collaboration |
+| **Memory** | Session-based, short-term | 4 types: short/long-term, episodic, shared |
+| **Enterprise** | Limited control mechanisms | Checkpointing, observability, middleware, HITL |
+| **Use Case** | Quick info, brainstorming, chat | Autonomous workflows, system integration |
+
+## References & Further Reading
+
+- [Microsoft Agent Framework (GitHub)](https://github.com/microsoft/agent-framework)
+- [Microsoft Agent Framework Workflows](https://learn.microsoft.com/tr-tr/agent-framework/workflows/)
+- [Semantic Kernel (Microsoft)](https://learn.microsoft.com/en-us/semantic-kernel/)
+- [AutoGen (Microsoft Research)](https://github.com/microsoft/autogen)
+- [Model Context Protocol (MCP) — Getting Started](https://modelcontextprotocol.io/docs/getting-started/intro)
+- [What Are Large Language Models? (IBM)](https://www.ibm.com/think/topics/large-language-models)
+- [What is a Large Language Model? (Stanford HAI)](https://hai.stanford.edu/ai-definitions/what-is-a-llm)
+- [GitHub Copilot Workspace](https://github.com/features/copilot)
