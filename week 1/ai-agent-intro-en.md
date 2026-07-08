@@ -202,3 +202,45 @@ It consists of 3 main components:
 - Transforms AI from a mere text-generating chatbot into a system capable of true autonomy.
 - Eliminates fragmented integration efforts by providing a single, standard protocol. This reduces development time, costs, and complexity.
 - Being standard and open-source, it enables model switching without requiring major changes to the host system.
+
+## Microsoft Agent Framework
+
+Microsoft Agent Framework is an open-source framework designed for building, orchestrating, and deploying autonomous AI agents and multi-agent workflows into production environments.
+
+AI agents are developed to overcome the static nature of LLMs and manage complex processes autonomously. Microsoft Agent Framework is the set of tools and services used to develop and manage these agents.
+
+The main goal is to build autonomous systems that perform complex tasks — going beyond one-time commands to interact with external systems, maintain memory, and solve complex problems autonomously.
+
+It is the direct next generation of Semantic Kernel and AutoGen, combining AutoGen's simplicity in creating single and multi-agent systems with Semantic Kernel's enterprise-grade capabilities under a single roof.
+
+### Core Architectural Components
+
+The framework's architecture is built on two main components to handle tasks of varying complexity:
+
+**Agents:** Autonomous units that use large language models as their "brain" to process inputs, use external tools, and generate autonomous responses. They are used in open-ended, conversation-based scenarios where the agent needs to select its own tools and make autonomous decisions. Supports various model providers including Microsoft Foundry, Azure OpenAI, Anthropic, and Ollama.
+
+**Workflows:** Connect multiple agents, human interactions, and external systems in a graph-based structure for multi-step tasks. Used when tasks have clear steps and precise control over execution order is required.
+
+#### Workflow API Types
+
+Workflows offer 2 different APIs:
+
+**Functional API:** The most natural and simple method, designed using standard code loops. Uses decorators such as `@workflow` and `@step` for control flow. Preferred when operations are mostly sequential, have specific loops, or need to be solved with straightforward logic.
+
+**Graph API:** An advanced method where the process is drawn with strict boundaries as a directed graph. Agents or custom logic are defined as "executors," and message paths between them are defined as "edges." Which agent receives which message is enforced through strict type validation. This API is preferred when the process architecture is fixed, tasks are highly detailed, and strict message routing rules are needed.
+
+### MCP Support
+
+MAF supports MCP (Model Context Protocol), enabling agents to connect to external data sources, applications, and tools in a standard and secure way.
+
+### Enterprise-Ready Production Features
+
+To take agents from prototype to production with confidence, MAF inherits the following enterprise capabilities from Semantic Kernel:
+
+**Checkpointing:** Prevents long-running processes from being lost entirely. The system saves its current state, allowing the process to be recovered and resumed from where it left off.
+
+**Observability:** Removes the "black box" nature of agent actions by providing distributed tracing and debugging capabilities.
+
+**Middleware:** Allows custom pipelines to be created between agent requests and responses, making error handling and security management easier.
+
+**Human-in-the-Loop (HITL):** Built-in mechanisms that automatically pause workflows before critical decisions and wait for human approval or input.

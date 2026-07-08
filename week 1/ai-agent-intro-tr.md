@@ -202,3 +202,45 @@ Yapay zekanın eğitildiği tarihte kalan statik bilgilere bağımlı olmaktan k
 - Yapay zekayı sadece soru metin üreten bir sohbet botu olmaktan çıkarıp, gerçek otonomiyi mümkün kılar.
 - Tek ve standart bir protokol sunarak dağınık entegrasyon süresini ortadan kaldırır. Bu sayede geliştirme süresi, maliyetler ve karmaşıklık azaltılır.
 - Standart ve açık kaynaklı olduğu için ana sistemde büyük değişiklikler yapılmadan model değişikliğini mümkün kılar.
+
+## Microsoft Agent Framework
+
+Microsoft Agent Framework, otonom yapay zeka ajanları ve çok ajanlı iş akışları oluşturmak, düzenlemek ve üretim ortamına dağıtmak için tasarlanmış açık kaynaklı çerçevedir.
+
+Yapay zeka ajanları, LLM'lerin statik doğasını aşmak ve karmaşık süreçleri otonom olarak yönetmek için geliştirilir. Microsoft Agent Framework, bu ajanları geliştirmek ve yönetmek için kullanılan araçlar ve servisler bütünüdür.
+
+Temel amaç; otonom, karmaşık görevleri yerine getiren araçlar geliştirmek, tek seferlik komutların ötesinde dış sistemlerle etkileşime geçen, hafızası olan ve karmaşık görevleri otonom olarak çözen sistemler kurulmasıdır.
+
+Semantic Kernel ve AutoGen'in doğrudan yeni neslidir. AutoGen'in tekli ve çoklu ajan oluşturmadaki basitliğini, Semantic Kernel'in kurumsal düzeydeki güçlü özelliklerini tek bir çatı altında birleştirir.
+
+### Temel Mimari Bileşenler
+
+Çerçevenin temel mimarisi, farklı karmaşıklıktaki görevleri yönetebilmek için iki ana bileşen üzerine kuruludur:
+
+**Ajanlar (Agents):** Girdileri işlemek, dış araçları (tools) kullanmak ve otonom yanıtlar üretmek için "beyin" olarak büyük dil modellerini kullanan otonom birimlerdir. Görevlerin açık uçlu ve daha sohbet tabanlı olduğu, ajanın kendi kendine araç seçip otonom kararlar almasına ihtiyaç duyulan durumlarda kullanılır. Microsoft Foundry, Azure OpenAI, Anthropic, Ollama gibi çeşitli model sağlayıcılarını destekler.
+
+**İş Akışları (Workflows):** Çok adımlı görevlerde birden fazla ajanı, insan etkileşimini ve dış sistemleri graf (graph) tabanlı yapıda birbirine bağlar. Görevlerin net adımlara sahip olduğu ve yürütme sırası üzerinde kesin kontrol istenen durumlarda kullanılır.
+
+#### Workflow API Türleri
+
+İş akışları mimari yapıda 2 farklı API sunar:
+
+**İşlevsel (Functional) API:** Standart kod döngüleri kullanılarak tasarlanan en doğal ve basit yöntemdir. Denetim akışları ve `@workflow`, `@step` gibi dekoratörler kullanılır. Yapılacak işlemler daha çok sırayla (sekansiyel) ilerliyor, özel döngülere sahipse ve düz bir mantıkla çözülmek isteniyorsa tercih edilir.
+
+**Graf API:** Süreci yönlendirilmiş bir grafik (ağ) olarak önceden kesin sınırlarla çizilmiş gelişmiş yöntemdir. Ajanları veya özel mantıkları birer "yürütücü" (executor), bu görevler arası mesaj aktarım yollarını ise "kenar" (edge) olarak tanımlar. Hangi ajanın hangi mesajı alacağı, katı tür doğrulamalarıyla güvence altına alınır. Sürecin mimarisi sabitse, görevler çok fazla detaylanıyorsa, mesaj yönlendirmesinde katı kurallara ihtiyaç duyuluyorsa bu API tercih edilir.
+
+### MCP Desteği
+
+MAF, ajanların dış veri kaynaklarına, uygulamalara ve araçlara standart ve güvenli bir şekilde bağlanmasını sağlayan MCP (Model Context Protocol) desteğine sahiptir.
+
+### Üretime Hazır Kurumsal Özellikler
+
+Ajanları sadece prototip olmaktan çıkarıp canlı (üretim) ortamına güvenle almak için Semantic Kernel'den aldığı şu kurumsal özelliklere sahiptir:
+
+**Denetim noktası oluşturma (Checkpointing):** Uzun süreli çalışan işlemlerin tamamen kaybolmasını engeller. Sistem mevcut durumunu kaydederek sürecin kaldığı yerden kurtarılmasını ve yeniden başlatılmasını sağlar.
+
+**Gözlemlenebilirlik (Observability):** Ajanların eylemlerini "kapalı kutu" olmaktan çıkararak dağıtık izleme ve hata ayıklama imkanı sağlar.
+
+**Ara yazılımlar (Middleware):** Ajanların istek ve yanıt süreçleri arasına girerek özel işlem hatları oluşturmasını, hataların yönetilmesini ve güvenliğin sağlanmasını kolaylaştırır.
+
+**Döngüdeki insan (Human-in-the-Loop - HITL):** Özellikle iş akışlarında kritik kararlar alınmadan önce sistemin otomatik olarak duraklatılıp bir insandan onay veya girdi beklemesini sağlayan yerleşik mekanizmalardır.
