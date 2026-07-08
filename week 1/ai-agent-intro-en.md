@@ -4,11 +4,51 @@
 
 AI agents are autonomous software systems that use artificial intelligence to perform complex tasks and achieve specific goals without requiring human intervention. They possess a wide range of capabilities including decision-making, problem-solving, interacting with external environments, and executing goal-oriented actions.
 
-At their core, they are powered by Large Language Models (LLMs). This enables them to process multimodal data such as text, audio, video, and code. However, traditional LLMs are static; they are limited to the data they were trained on. They cannot access live data or take autonomous action.
+At their core, they are powered by Large Language Models (LLMs) and, when needed, supported by multimodal models to process multimodal data including text, audio, video, and code. However, traditional LLMs are static; they are limited to the data they were trained on. They cannot access live data or take autonomous action.
 
 AI agents, on the other hand, have a dynamic structure. They combine the reasoning ability of LLMs with tool/function calling, memory, and dynamic workflows, allowing them to go beyond their training data. This enables them to perform autonomous and complex tasks.
 
 **Tool Calling:** The ability of an AI to autonomously consult external systems or resources to expand its capabilities, interact with its environment, and complete tasks.
+
+## What is an LLM (Large Language Model)?
+
+In its most basic definition, a Large Language Model (LLM) is a deep learning-based AI system trained on massive amounts of text data, capable of understanding and generating human-like language.
+
+At their core, LLMs are massive statistical prediction machines. When a prompt is given to the model, it does not pre-plan the response. Using the language rules it has learned from its training data, it predicts the most appropriate next word (token) based on the context.
+
+The word "large" in the name refers both to being trained on datasets containing billions of words and to having mathematical weights — reaching billions or even trillions of parameters — that the model uses internally to make decisions. The larger the model, the higher its capacity to imitate human language and produce accurate responses.
+
+### How LLMs Work
+
+The underlying process of Large Language Models consists of multi-layered and complex stages, from raw data input to generating fluent text for the user.
+
+#### Tokenization
+
+Models cannot read words directly. Input texts (prompts) are broken down into small, meaningful pieces (words or syllables) called tokens, which the machine can process.
+
+#### Embedding
+
+Language models cannot read words; they can only perceive numbers. Therefore, the obtained tokens are converted into multi-dimensional numerical vectors called embeddings. Semantically similar words are positioned close to each other in this mathematical space.
+
+#### Transformer and Self-Attention
+
+At this stage, the transformer architecture and self-attention mechanism come into play.
+
+Introduced in the 2017 paper "Attention Is All You Need" by Google researchers, the Transformer architecture is a neural network structure that forms the foundation of today's Large Language Models. It enables LLMs to understand and generate human language.
+
+Older-generation AI systems had to process words sequentially, one by one — just like humans reading a book. This slowed down the system and made it difficult for the model to retain relationships between words at the beginning and end of a sentence.
+
+The Transformer architecture solved this problem with two key innovations:
+
+1. **Parallel Processing:** Instead of reading words sequentially, Transformers process the entire text or word sequence simultaneously, in parallel. This enabled models to be trained on massive amounts of data in much less time by fully utilizing the power of modern hardware.
+
+2. **Self-Attention:** The biggest innovation of the Transformer architecture. Self-attention allows the model to simultaneously calculate which words are related to each other, regardless of the distance between them in a long sentence.
+
+##### How It Works
+
+When a question is given to the model, the Transformer breaks the text into tokens, then converts them into vectors. Through the self-attention mechanism, it extracts the contextual map of the entire sentence and the relationships between words. In the final step, it calculates and generates the most logical next word to add to the sequence based on this learned context.
+
+The system uses learned statistical probabilities to predict the next most logical word to add to the sequence. The generated word is fed back into the system, and the process continues — predicting the next word — until the response is complete.
 
 ## Key Features That Make AI Agents Powerful
 
@@ -74,7 +114,7 @@ AI agents are categorized by their capabilities, working structures, and forms o
 
 Agents are divided into 2 types based on their ability to communicate with the user:
 
-- **Surface Agents / Interactive Partners:** Agents that communicate directly with the user, typically triggered by user input.
+- **Interactive Agents:** Agents that communicate directly with the user, typically triggered by user input.
 
 - **Autonomous Background Processes:** Agents that run in the background without direct input, triggered by events or tasks.
 
@@ -144,7 +184,7 @@ It works like a universal USB-C that connects electronic devices. It enables AI 
 
 The biggest limitation of Large Language Models (LLMs) is that they are static — confined to the data they were trained on and unable to autonomously communicate with the outside world. MCP acts as a bridge that removes these limitations.
 
-MCP is the fundamental standard that allows AI to break free from dependence on static training data, pull real-time data from external sources, fill knowledge gaps, and keep itself updated. However, MCP is not a closed box limited to LLMs; it is a fully open-source and universal protocol.
+MCP is one of the key standards that allows AI to break free from dependence on static training data, pull real-time data from external sources, fill knowledge gaps, and keep itself updated. However, MCP is not a closed box limited to LLMs; it is a fully open-source and universal protocol.
 
 ### Core Architecture and How It Works
 

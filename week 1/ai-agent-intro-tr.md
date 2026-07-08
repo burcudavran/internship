@@ -4,11 +4,51 @@
 
 Karmaşık görevleri ve belirli hedefleri yerine getirmek için yapay zeka kullanılan, müdahale gerektirmeden kendi başına karar alabilen (özerk) yazılımlardır. Karar verme, problem çözme, dış ortamlarla etkileşime girme ve hedefe yönelik eylemleri gerçekleştirme gibi geniş kapsamlı yeteneklere sahiptir.
 
-Temelinde Büyük Dil Modellerini (LLM) barındırır. Bu sayede metin, ses, video, kod gibi çok modlu verileri işleyebilir. Ancak geleneksel LLM'ler statiktir; yalnızca eğitildikleri veriler ile sınırlıdırlar. Canlı veri veya otonom eyleme geçemezler.
+Temelinde Büyük Dil Modellerini (LLM) barındırır ve gerektiğinde multimodal modeller ile desteklenerek metin, ses, video, kod gibi çok modlu verileri işleyebilir. Ancak geleneksel LLM'ler statiktir; yalnızca eğitildikleri veriler ile sınırlıdırlar. Canlı veri veya otonom eyleme geçemezler.
 
 AI Agentler ise dinamik yapıya sahiptirler; LLM'in akıl yürütme becerisini arka planda araç çağırma (tool/function calling), hafıza (memory) ve dinamik iş akışları (workflow) ile birleştirir ve eğitildiği verilerin ötesine geçer. Bu sayede otonom ve karmaşık görevleri yerine getirebilirler.
 
 **Tool Calling:** Yapay zeka araçlarının kapasitelerini genişletmek, çevreleriyle etkileşime girmek ve görevleri yerine getirmek amacıyla harici sistemlere veya kaynaklara otonom başvurmasıdır.
+
+## LLM (Büyük Dil Modeli) Nedir?
+
+Büyük Dil Modelleri (LLM) en temel tanımıyla devasa miktarda metin verisi kullanılarak eğitilmiş ve insan benzeri dili anlayıp üretebilen derin öğrenme tabanlı yapay zeka sistemleridir.
+
+LLM'ler aslında işin özünde devasa birer istatistiksel tahmin makineleridir. Modele bir prompt verildiğinde model bunu önceden kurgulamaz. Eğitiminde kullanılan metinler sayesinde öğrendiği dil kurallarını kullanarak bağlama en uygun şekilde, bir sonraki kelimenin (token'ın) ne olması gerektiğini tahmin eder.
+
+İsmindeki "büyük" kelimesi hem milyarlarca kelimeden oluşan veri kümeleriyle eğitildiğini hem de modelin kendi içerisinde karar vermek için kullandığı ve milyarlarca hatta trilyonlarca sayıya ulaşabilen matematiksel ağırlıklara sahip olmasıdır. Model ne kadar büyükse insan dilini taklit etme ve isabetli yanıtlar verme kapasitesi de o kadar yüksek olur.
+
+### LLM Çalışma Süreci
+
+Büyük Dil Modellerinin arka plandaki çalışma süreci, ham verinin alınıp kullanıcının karşısına akıcı bir metin olarak çıkmasına kadar uzanan çok katmanlı ve karmaşık aşamalardan oluşur.
+
+#### Tokenization
+
+Modeller kelimeleri doğrudan okuyamaz. Girilen metinler (promptlar) token adı verilen, makinenin algılayabileceği küçük, anlamlı parçalara (kelime veya hece) bölünür.
+
+#### Embedding
+
+Dil modelleri kelimeleri okuyamaz, sadece sayıları algılayabilir. Bu nedenle elde edilen token'lar, "embedding" adı verilen çok boyutlu sayısal vektörlere dönüştürülür. Anlamca birbirine benzeyen kelimeler matematiksel uzayda birbirlerine yakın konumlandırılırlar.
+
+#### Transformer ve Öz-Dikkat (Self-Attention)
+
+Bu aşamada devreye transformer mimarisi ve öz-dikkat (self-attention) girer.
+
+2017 yılında Google araştırmacıları tarafından yayınlanan "Attention Is All You Need" isimli makaleyle tanıtılan Transformer mimarisi günümüzdeki Büyük Dil Modellerinin temelini oluşturan bir sinir ağı yapısıdır. Büyük Dil Modellerinin insan dilini anlamasını ve üretmesini sağlar.
+
+Eski nesil yapay zeka sistemleri bir metni okurken kelimeleri tıpkı insanların kitap okuduğu gibi sırayla, sekansiyel olarak işlemek zorundaydı. Bu durum hem sistem hızını yavaşlatıyor hem de modelin cümle başındaki bir kelimenin cümle sonundaki bir kelimeyle olan ilişkisini akılda tutmasını zorlaştırıyordu.
+
+Transformer mimarisi bu sorunu iki aşama ile ortadan kaldırdı:
+
+1. **Paralel İşleme:** Transformerlar kelimeleri sırayla okumak yerine metnin veya kelime dizisinin tamamını aynı anda, paralel olarak işler. Bu durum modellerin yeni donanımlı cihazlarda cihazın gücünü tam kapasite kullanarak devasa miktardaki verilerle çok daha kısa sürede eğitilebilir hale getirmiştir.
+
+2. **Öz-Dikkat (Self-Attention):** Transformer mimarisinin en büyük inovasyonudur. Öz-dikkat modelin uzun bir cümleyi okurken aralarında ne kadar mesafe olursa olsun hangi kelimelerin birbiriyle ilişkili olduğunu eşzamanlı olarak hesaplamasını sağlar.
+
+##### Nasıl Çalışır?
+
+Modele bir soru sorulduğunda transformer, metni makinenin algılayabileceği gibi "token" adı verilen küçük parçalara, ardından da vektörlere dönüştürür. Sonra öz-dikkat mekanizması sayesinde tüm cümlenin bağlam haritasını ve kelimeler arası ilişkileri çıkarır. Son adımda da öğrendiği bu bağlama göre diziye eklenecek bir sonraki en mantıklı kelimenin ne olması gerektiğini hesaplar ve üretir.
+
+Sistem öğrenilmiş istatistiksel olasılıkları kullanarak diziye eklenecek bir sonraki en mantıklı kelimeyi tahmin eder. Üretilen kelime tekrar sisteme dahil edilir ve cevap tamamen bitene kadar sistem bir sonraki kelimeyi tahmin etmeye devam eder.
 
 ## AI Ajanlarını Güçlü Kılan Temel Özellikler
 
@@ -74,7 +114,7 @@ Yapay Zeka Ajanları, kapasitelerine, çalışma yapılarına ve kullanıcıyla 
 
 Ajanlar kullanıcıyla iletişim kurma becerisine göre 2'ye ayrılır:
 
-- **Yüzey Ajanları / Etkileşimli Ortaklar:** Kullanıcıyla doğrudan konuşan, genellikle kullanıcı tetiklenmesiyle çalışan ajanlar.
+- **Etkileşimli Ajanlar (Interactive Agents):** Kullanıcıyla doğrudan konuşan, genellikle kullanıcı tetiklenmesiyle çalışan ajanlar.
 
 - **Otonom Arka Plan Süreçleri:** Doğrudan bir girdisi olmadan arka planda çalışan, olaylar veya görevlerle tetiklenen ajanlar.
 
@@ -144,7 +184,7 @@ Elektronik cihazları birbirine bağlayan evrensel bir USB-C gibi çalışır. Y
 
 Büyük dil modellerinin (LLM) en büyük kısıtlaması, statik olmaları yani eğitildikleri bilgilerle sınırlı kalmaları ve dış dünyayla otonom olarak iletişime geçememeleridir. MCP bu kısıtlamaları ortadan kaldıran bir köprü görevi görür.
 
-Yapay zekanın eğitildiği tarihte kalan statik bilgilere bağımlı olmaktan kurtulup, dış kaynaklardan gerçek zamanlı veriler çekerek bilgi eksikliklerini tamamlamasını ve kendini güncellemesini sağlayan şey temel standart MCP'dir. Ancak MCP, sadece büyük dil modelleriyle sınırlı kapalı bir kutu değildir; tamamen açık kaynaklı ve evrensel bir protokoldür.
+Yapay zekanın eğitildiği tarihte kalan statik bilgilere bağımlı olmaktan kurtulup, dış kaynaklardan gerçek zamanlı veriler çekerek bilgi eksikliklerini tamamlamasını ve kendini güncellemesini sağlayan önemli standartlardan biri MCP'dir. Ancak MCP, sadece büyük dil modelleriyle sınırlı kapalı bir kutu değildir; tamamen açık kaynaklı ve evrensel bir protokoldür.
 
 ### Temel Mimari ve Çalışma Prensibi
 
