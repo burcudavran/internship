@@ -310,4 +310,4 @@ ChatGPT is suitable for quick information retrieval, brainstorming, and general-
 - [Model Context Protocol (MCP) — Getting Started](https://modelcontextprotocol.io/docs/getting-started/intro)
 - [What Are Large Language Models? (IBM)](https://www.ibm.com/think/topics/large-language-models)
 - [What is a Large Language Model? (Stanford HAI)](https://hai.stanford.edu/ai-definitions/what-is-a-llm)
-- [GitHub Copilot Workspace](https://github.com/features/copilot)
+- [What Are AI Agents? (Google Cloud)](https://cloud.google.com/discover/what-are-ai-agents)

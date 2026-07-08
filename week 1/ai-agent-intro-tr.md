@@ -291,8 +291,6 @@ ChatGPT kurumsal kullanım için sınırlı denetim mekanizmalarına sahiptir. M
 ### Kullanım Senaryosu
 ChatGPT, hızlı bilgi edinme, fikir üretme ve genel amaçlı sohbet için uygundur. MAF, belirli bir iş sürecini otonom olarak yürütmesi gereken, dış sistemlerle entegre çalışan ve kurumsal gereksinimleri olan uygulamalar için tercih edilir.
 
-Özetle
-
 | Özellik | ChatGPT | Microsoft Agent Framework |
 |---|---|---|
 | **Amaç** | Genel amaçlı sohbet ürünü | Otonom ajan geliştirme çerçevesi |
@@ -312,4 +310,4 @@ ChatGPT, hızlı bilgi edinme, fikir üretme ve genel amaçlı sohbet için uygu
 - [Model Context Protocol (MCP) — Getting Started](https://modelcontextprotocol.io/docs/getting-started/intro)
 - [What Are Large Language Models? (IBM)](https://www.ibm.com/think/topics/large-language-models)
 - [What is a Large Language Model? (Stanford HAI)](https://hai.stanford.edu/ai-definitions/what-is-a-llm)
-- [GitHub Copilot Workspace](https://github.com/features/copilot)
+- [What Are AI Agents? (Google Cloud)](https://cloud.google.com/discover/what-are-ai-agents)
