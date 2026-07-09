@@ -107,7 +107,7 @@ Ajanın geçmiş etkileşimleri, kullanıcı tercihlerini ve görev sırasında 
 
 Ajanın verilen görevler doğrultusunda insan müdahalesine ve her adımda onay mekanizmasına ihtiyaç duymadan kararlar alıp uygulayabilme özgürlüğüdür.
 
-## Yapay Zeka Ajanı Türleri
+## AI Ajan Türleri
 
 Yapay Zeka Ajanları, kapasitelerine, çalışma yapılarına ve kullanıcıyla etkileşim biçimlerine göre çeşitlere ayrılır.
 
