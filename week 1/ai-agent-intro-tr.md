@@ -5,7 +5,7 @@
 - [AI Agent Nedir?](#ai-agent-nedir)
 - [LLM (Büyük Dil Modeli) Nedir?](#llm-büyük-dil-modeli-nedir)
 - [AI Ajanlarını Güçlü Kılan Temel Özellikler](#ai-ajanlarını-güçlü-kılan-temel-özellikler)
-- [Yapay Zeka Ajanı Türleri](#yapay-zeka-ajanı-türleri)
+- [AI Ajan Türleri](#ai-ajan-türleri)
 - [Chatbot ile AI Agent Arasındaki Farklar](#chatbot-ile-ai-agent-arasındaki-farklar)
 - [Agent Neden Sadece Prompt Yazan Bir Sistem Değildir?](#agent-neden-sadece-prompt-yazan-bir-sistem-değildir)
 - [Agent Mimarisinin Temel Parçaları](#agent-mimarisinin-temel-parçaları)
