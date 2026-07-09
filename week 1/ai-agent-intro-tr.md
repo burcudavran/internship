@@ -191,6 +191,54 @@ Prompt tekil ve anlıktır. Verilen komuta tek bir cevap üretilir ve işlem son
 
 **MCP:** Yapay zeka uygulamalarının dış sistemlere, veri kaynaklarına ve araçlara bağlanmasını sağlayan açık kaynaklı ve standartlaştırılmış bir iletişim protokolüdür.
 
+**Özetle:** Bir AI ajanı, yukarıdaki bileşenlerin tamamını bir araya getiren bütünleşik bir sistemdir. LLM ajanın beyni, Tool dış dünyaya açılan elleri, Memory geçmişi ve bağlamı, Workflow izlenecek yolu, MCP ise tüm dış sistemlerle iletişim kuran sinir sistemidir.
+
+> **Agent = LLM + Tools + Memory + Workflow + MCP**
+
+### Örnek: Uçtan Uca Ajan Akışı
+
+Bir kullanıcının *"Yarın İstanbul'da bir toplantı ayarla ve bana en uygun uçak biletini bul"* talebiyle başlayan süreçte ajanın attığı adımlar:
+
+**1. Hedef Analizi ve Planlama** — Ajan talebi alır, karmaşık görevi alt görevlere böler: (a) takvimde boş zaman kontrolü, (b) uçak bileti arama, (c) toplantı oluşturma.
+
+**2. ReAct Döngüsü (Düşün - Eyleme Geç - Gözlemle)**
+
+```
+Thought: Kullanıcı yarın İstanbul'da toplantı istiyor. Önce takvimine bakmalıyım.
+Action: check_calendar(tarih: "yarın", kullanıcı: "ben")
+        → MCP üzerinden Calendar API'ye bağlanır
+Observation: 09:00-11:00 arası boş, 14:00-15:30 arası boş
+
+Thought: Sabah uçuşu ve toplantı için uygun zaman dilimi 09:00-11:00.
+         Şimdi Ankara-İstanbul uçuşlarını sorgulamalıyım.
+Action: search_flights(kalkış: "Ankara", varış: "İstanbul", tarih: "yarın")
+        → MCP üzerinden Flight API'ye bağlanır
+Observation: 3 uçuş bulundu — 07:00 (750 TL), 10:00 (1200 TL), 16:00 (600 TL)
+
+Thought: 07:00 uçuşu 09:00'a yetişir, en ucuz ikinci seçenek.
+         10:00 uçuşu toplantı saatine yetişmez. 16:00 uçuşu ucuz ama çok geç.
+         En uygun: 07:00 uçuşu + 09:00-10:30 toplantı.
+Action: create_event(tarih: "yarın", saat: "09:00-10:30", başlık: "Toplantı")
+        → MCP üzerinden Calendar API'ye yazma
+Observation: Toplantı oluşturuldu.
+
+Thought: Geçmişte kullanıcı hep sabah uçuşlarını tercih etmişti (uzun süreli hafıza).
+         Bu tercihi kaydetmek sonraki seferler için faydalı olur.
+Action: save_preference(tercih: "sabah uçuşu")
+        → Bellek veritabanına yazılır
+Observation: Tercih kaydedildi.
+```
+
+**3. Sonuç** — Ajan kullanıcıya şu yanıtı üretir:
+
+> *"Yarın için 07:00 Ankara-İstanbul uçuşunu ve 09:00-10:30 arası toplantıyı ayarladım. Toplam: 750 TL."*
+
+Bu örnek, bir AI ajanda aynı anda işleyen birden fazla mekanizmayı gösterir:
+- **Planning:** Görevi alt görevlere bölme
+- **ReAct Döngüsü:** Thought → Action → Observation adımları
+- **Tool Calling + MCP:** Dış API'lere (Calendar, Flight) bağlanma
+- **Memory:** Geçmiş tercihleri hatırlama ve yeni bilgiyi kaydetme
+
 ## MCP (Model Context Protocol)
 
 Elektronik cihazları birbirine bağlayan evrensel bir USB-C gibi çalışır. Yapay zeka modellerinin dış sistemlerle standart bir yolla etkileşime girmesini sağlar.
@@ -208,6 +256,39 @@ Yapay zekanın eğitildiği tarihte kalan statik bilgilere bağımlı olmaktan k
 **MCP Client (İstemci):** Host içinde çalışır. Modelin isteklerini MCP'nin anlayacağı formata, MCP'nin isteklerini modelin anlayacağı formata çevirir. Ayrıca kullanılabilir MCP sunucularını bulur. Genellikle kullanılan agent framework'ünün içine gömülü bir kütüphane veya SDK olarak çalışır.
 
 **MCP Server (Sunucu):** LLM'e bağlam, veri veya dış araç yetenekleri sağlayan harici hizmettir. Dış dünyadaki veri kaynaklarını veya araçları, protokolün anladığı ortak dile çeviren küçük, izole edilmiş servislerdir.
+
+### Taşıma Katmanı (Transport)
+
+MCP'de istemci (client) ve sunucu (server) arasındaki iletişim JSON-RPC 2.0 mesajları üzerinden gerçekleşir. İki farklı taşıma yöntemi vardır:
+
+**Stdio (Standard Input/Output):** İstemci, MCP sunucusunu aynı makinede ayrı bir alt süreç (subprocess) olarak başlatır. Haberleşme standart girdi/çıktı kanalları üzerinden yapılır. Mesaj iletimi basit girdi/çıktı mantığıyla gerçekleştiği için hızlı ve senkronizedir. Yerel dosya sistemleri, veritabanları ve yerel API'ler gibi kaynaklara erişim için idealdir. Veri alışverişi yalnızca makine içinde gerçekleştiğinden hassas verilerin işlendiği senaryolarda veya çevrimdışı uygulamalarda daha yüksek güvenlik ve gizlilik sunar.
+
+**SSE (Server-Sent Events):** İstemci ve sunucu HTTP üzerinden bağlanır. İstemciden sunucuya mesajlar HTTP POST istekleriyle, sunucudan istemciye veri akışı ise SSE ile sağlanır. Asenkron ve olay güdümlü (event-driven) yapısı sayesinde aynı anda birden fazla sunucu çağrısını yönetebilir. İnternet üzerindeki uzak kaynaklara bağlanmak için tercih edilir. Aynı sunucuya birden fazla yapay zeka uygulamasının erişmesine olanak tanıdığı için yüksek esneklik ve ölçeklenebilirlik sunar; çok kullanıcılı, ortak araçlar inşa etmek için idealdir.
+
+**Özetle:** Yerel kaynaklara erişirken hızlı ve senkronize olan **Stdio**, internet üzerindeki uzak kaynaklara gerçek zamanlı ve güvenilir bağlantı kuran **SSE** kullanılır.
+
+#### Stdio ve SSE Karşılaştırması
+
+| Özellik | Stdio | SSE |
+|---|---|---|
+| **Kaynak Konumu** | Yerel (makine içi) | Uzak (ağ/internet) |
+| **İletişim Tipi** | Senkron, basit I/O | Asenkron, olay güdümlü |
+| **Hız/Gecikme** | Düşük gecikme, yüksek hız | Gerçek zamanlı akış |
+| **Güvenlik** | Yüksek (makine dışına çıkmaz) | Ağ bağlantısı gerektirir |
+| **Ölçeklenebilirlik** | Tek makineye özgü | Çoklu uygulama erişimine açık |
+| **Kullanım Alanı** | Yerel dosya sistemi, veritabanı, IDE | Uzak API'ler, bulut servisleri |
+
+### MCP Primitifleri
+
+MCP, ajanların dış dünyayla etkileşim kurması için üç temel yapı taşı sunar:
+
+- **Tools (Araçlar):** Ajanın otonom olarak çağırabileceği işlevlerdir. Veritabanı sorgusu çalıştırmak, hava durumu bilgisi almak veya dosya oluşturmak gibi eylemleri tanımlar. Ajan, ihtiyaç duyduğunda bu araçları seçip çağırır ve sonucu doğrudan kullanır. Çift yönlüdür (çağrı + yanıt).
+
+- **Resources (Kaynaklar):** Ajanın okuyabileceği statik veya dinamik veri kaynaklarıdır. Dosya içerikleri, veritabanı tabloları, API dökümantasyonu veya log dosyaları gibi verileri temsil eder. Sunucu tarafından sunulur, ajan tarafından okunur. Tek yönlüdür (sadece okuma).
+
+- **Prompts (Şablonlar):** Sunucu tarafında tanımlı, tekrar kullanılabilir prompt şablonlarıdır. Sıkça yapılan işlemler için hazır talimat kalıpları sunar. Kullanıcı veya ajan bu şablonları çağırarak hızlıca standartlaştırılmış görevler başlatabilir.
+
+**Özetle:** Tools ajana **eylem** yeteneği, Resources **bilgi** kaynağı, Prompts ise **hazır talimat** kalıpları sağlar.
 
 ### Neler Sağlar ve Neden Önemlidir
 

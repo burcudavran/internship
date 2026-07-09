@@ -191,6 +191,54 @@ In summary, a prompt is a static, text-based command that tells a model what to 
 
 **MCP:** An open-source, standardized communication protocol that enables AI applications to connect to external systems, data sources, and tools.
 
+**In summary:** An AI agent is an integrated system that brings together all of the above components. The LLM is the agent's brain, Tools are its hands reaching into the outside world, Memory provides context and history, Workflow defines the path to follow, and MCP acts as the nervous system communicating with all external systems.
+
+> **Agent = LLM + Tools + Memory + Workflow + MCP**
+
+### Example: End-to-End Agent Flow
+
+A walkthrough of an agent's steps when handling the request *"Schedule a meeting in Istanbul tomorrow and find me the best flight"*:
+
+**1. Goal Analysis and Planning** — The agent receives the request and breaks the complex task into subtasks: (a) check calendar availability, (b) search for flights, (c) create the meeting.
+
+**2. ReAct Loop (Think - Act - Observe)**
+
+```
+Thought: The user wants a meeting in Istanbul tomorrow. I need to check their calendar first.
+Action: check_calendar(date: "tomorrow", user: "me")
+        → Connects to Calendar API via MCP
+Observation: 09:00-11:00 is free, 14:00-15:30 is free
+
+Thought: The morning flight and meeting slot align with 09:00-11:00.
+         Now I should search for Ankara-Istanbul flights.
+Action: search_flights(departure: "Ankara", arrival: "Istanbul", date: "tomorrow")
+        → Connects to Flight API via MCP
+Observation: 3 flights found — 07:00 ($210), 10:00 ($340), 16:00 ($170)
+
+Thought: The 07:00 flight arrives by 09:00, second cheapest.
+         10:00 flight won't make it in time. 16:00 is cheap but too late.
+         Best option: 07:00 flight + 09:00-10:30 meeting.
+Action: create_event(date: "tomorrow", time: "09:00-10:30", title: "Meeting")
+        → Writes to Calendar API via MCP
+Observation: Meeting created.
+
+Thought: The user has always preferred morning flights in the past (long-term memory).
+         Saving this preference will be useful for future requests.
+Action: save_preference(preference: "morning flight")
+        → Writes to memory database
+Observation: Preference saved.
+```
+
+**3. Result** — The agent produces the following response for the user:
+
+> *"I've booked the 07:00 Ankara-Istanbul flight and scheduled a meeting from 09:00-10:30 tomorrow. Total: $210."*
+
+This example demonstrates multiple mechanisms working simultaneously in an AI agent:
+- **Planning:** Breaking the task into subtasks
+- **ReAct Loop:** Thought → Action → Observation steps
+- **Tool Calling + MCP:** Connecting to external APIs (Calendar, Flight)
+- **Memory:** Recalling past preferences and saving new information
+
 ## MCP (Model Context Protocol)
 
 It works like a universal USB-C that connects electronic devices. It enables AI models to interact with external systems in a standardized way.
@@ -208,6 +256,39 @@ It consists of 3 main components:
 **MCP Client:** Runs inside the Host. It translates the model's requests into a format MCP understands, and MCP's requests into a format the model understands. It also discovers available MCP servers. It typically runs as a library or SDK embedded within the agent framework being used.
 
 **MCP Server:** An external service that provides context, data, or external tool capabilities to the LLM. These are small, isolated services that translate external data sources or tools into the common language understood by the protocol.
+
+### Transport Layer
+
+Communication between the MCP client and server is carried out via JSON-RPC 2.0 messages. There are two transport methods:
+
+**Stdio (Standard Input/Output):** The client launches the MCP server as a separate subprocess on the same machine. Communication occurs through standard input/output channels. Because message passing follows a simple I/O pattern, it is fast and synchronous. Ideal for accessing local resources such as file systems, databases, and local APIs. Since data exchange stays within the machine, it offers higher security and privacy for sensitive data scenarios or offline applications.
+
+**SSE (Server-Sent Events):** The client and server connect over HTTP. Messages from the client to the server are sent via HTTP POST requests, while data flow from the server to the client is handled through SSE. Its asynchronous, event-driven architecture allows it to manage multiple server calls simultaneously. Preferred for connecting to remote resources over the internet. Since multiple AI applications can access the same server, it provides high flexibility and scalability; ideal for building shared, multi-user tools.
+
+**In summary:** **Stdio** is used for fast, synchronous access to local resources, while **SSE** provides real-time, reliable connections to remote resources over the internet.
+
+#### Stdio vs SSE Comparison
+
+| Feature | Stdio | SSE |
+|---|---|---|
+| **Resource Location** | Local (machine-internal) | Remote (network/internet) |
+| **Communication Type** | Synchronous, simple I/O | Asynchronous, event-driven |
+| **Speed/Latency** | Low latency, high speed | Real-time streaming |
+| **Security** | High (stays within machine) | Requires network connection |
+| **Scalability** | Single-machine only | Accessible by multiple applications |
+| **Use Case** | Local file system, database, IDE | Remote APIs, cloud services |
+
+### MCP Primitives
+
+MCP provides three fundamental building blocks for agents to interact with the outside world:
+
+- **Tools:** Functions that the agent can call autonomously. They define actions such as running a database query, fetching weather data, or creating a file. The agent selects and invokes these tools when needed and uses the result directly. Two-way (call + response).
+
+- **Resources:** Static or dynamic data sources that the agent can read. They represent data such as file contents, database tables, API documentation, or log files. Served by the server, read by the agent. One-way (read-only).
+
+- **Prompts:** Reusable prompt templates defined on the server side. They provide ready-made instruction patterns for frequently performed tasks. The user or agent can call these templates to quickly launch standardized tasks.
+
+**In summary:** Tools provide agents with **action** capability, Resources provide **information** sources, and Prompts provide **ready-made instruction** templates.
 
 ### What It Provides and Why It Matters
 
