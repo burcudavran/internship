@@ -1,7 +1,10 @@
 # Week 1: Fundamental Concepts and Introduction to Microsoft Agent Framework
 
+> Last updated: August 5, 2026
+
 ## Table of Contents
 
+- [How to Read This Document](#how-to-read-this-document)
 - [What is an AI Agent?](#what-is-an-ai-agent)
 - [What is an LLM (Large Language Model)?](#what-is-an-llm-large-language-model)
 - [Key Features That Make AI Agents Powerful](#key-features-that-make-ai-agents-powerful)
@@ -9,19 +12,30 @@
 - [Differences Between Chatbots and AI Agents](#differences-between-chatbots-and-ai-agents)
 - [Why an Agent Is Not Just a Prompt-Writing System](#why-an-agent-is-not-just-a-prompt-writing-system)
 - [Core Components of Agent Architecture](#core-components-of-agent-architecture)
+  - [Tool vs MCP vs Workflow](#tool-vs-mcp-vs-workflow)
+  - [How Does an Agent Answer a User?](#how-does-an-agent-answer-a-user)
 - [MCP (Model Context Protocol)](#mcp-model-context-protocol)
 - [Microsoft Agent Framework](#microsoft-agent-framework)
 - [Differences Between ChatGPT and Microsoft Agent Framework](#differences-between-chatgpt-and-microsoft-agent-framework)
 
+## How to Read This Document
+
+This document includes both a foundational path and deeper technical detail:
+
+- **For the foundational explanation:** Focus on the AI agent definition, the difference from an LLM, the core architecture, the response flow, and Microsoft Agent Framework.
+- **For deeper technical detail:** Continue with Transformer and self-attention, agent types, MCP transports and primitives, and workflow approaches.
+
+For a spoken explanation, follow the foundational path and use the advanced sections as reference material for technical questions.
+
 ## What is an AI Agent?
 
-AI agents are autonomous software systems that use artificial intelligence to perform complex tasks and achieve specific goals without requiring human intervention. They possess a wide range of capabilities including decision-making, problem-solving, interacting with external environments, and executing goal-oriented actions.
+An AI agent is a software system that interprets inputs, plans when needed, and uses tools defined for it in pursuit of a specific objective. It can make decisions and take actions within configured permissions, safety policies, and human-approval boundaries.
 
 At their core, they are powered by Large Language Models (LLMs) and, when needed, supported by multimodal models to process multimodal data including text, audio, video, and code. However, traditional LLMs are static; they are limited to the data they were trained on. They cannot access live data or take autonomous action.
 
-AI agents, on the other hand, have a dynamic structure. They combine the reasoning ability of LLMs with tool/function calling, memory, and dynamic workflows, allowing them to go beyond their training data. This enables them to perform autonomous and complex tasks.
+AI agents combine an LLM's language and reasoning capabilities with instructions and an execution loop. Tool/function calling, sessions and memory, or workflows can be added when the use case requires them. This lets the model retrieve information or act through external systems in a controlled way rather than only generate text.
 
-**Tool Calling:** The ability of an AI to autonomously consult external systems or resources to expand its capabilities, interact with its environment, and complete tasks.
+**Tool Calling:** A model's structured request to invoke an available tool with specific parameters. The agent runtime or application layer performs the actual execution after the required validation and authorization checks.
 
 ## What is an LLM (Large Language Model)?
 
@@ -29,7 +43,7 @@ In its most basic definition, a Large Language Model (LLM) is a deep learning-ba
 
 At their core, LLMs are massive statistical prediction machines. When a prompt is given to the model, it does not pre-plan the response. Using the language rules it has learned from its training data, it predicts the most appropriate next word (token) based on the context.
 
-The word "large" in the name refers both to being trained on datasets containing billions of words and to having mathematical weights — reaching billions or even trillions of parameters — that the model uses internally to make decisions. The larger the model, the higher its capacity to imitate human language and produce accurate responses.
+The word "large" refers to training on broad datasets and to the model having many mathematical parameters. Parameter count can affect capacity, but a larger model is not guaranteed to be more accurate or suitable for every task. Data quality, training method, context, tools, latency, and cost also matter.
 
 ### How LLMs Work
 
@@ -69,17 +83,15 @@ The system uses learned statistical probabilities to predict the next most logic
 
 The agent's ability to process input data and context through a logical filter to derive meaning.
 
-Using Chain-of-Thought or ReAct (Reason + Act) templates, the AI is enabled to run an internal logical reasoning loop before taking action.
+Reasoning and tool-use loops let an agent evaluate the available context and choose an appropriate next step.
 
-**ReAct (reason + act):** A framework that combines the thinking and acting capabilities of AI. With the ReAct paradigm, agents are instructed to think after each tool response and action they take, and to plan which tool to use in the next step.
+**ReAct (reason + act):** An approach that combines reasoning and action. The agent invokes a tool, observes the result, and chooses the next step based on that result.
 
 It operates in cycles called: Think - Act - Observe. This allows agents to solve problems step by step, progressively improving their responses.
 
-**Chain-of-Thought:** An approach where agents reason slowly through a given prompt and explicitly articulate each thought.
+**Chain-of-Thought:** A general term for processing a complex problem through intermediate reasoning steps. A model's hidden reasoning does not need to be exposed verbatim to users or developers. Applications can instead make tool calls, tool results, and verifiable output summaries observable.
 
-This allows for transparent insight into how the agent approaches a question and formulates its answers.
-
-**In summary:** ReAct provides the action cycle where the agent interacts with the outside world (tools) and observes results, while Chain-of-Thought is the mechanism that enables the agent to "think out loud" and reason step by step in the background. Together, they allow agents to research and solve problems just like a human would.
+**In summary:** ReAct describes the action-and-observation loop with external tools. Reasoning helps choose the next step from the available context; it does not require publishing hidden internal reasoning.
 
 ### Planning
 
@@ -93,19 +105,20 @@ The agent stepping out of the static LLM world to interact with and leverage ext
 
 ### Memory
 
-The agent's ability to store past interactions, user preferences, and intermediate results obtained during tasks, and recall them when needed.
+The ability of an agent system to store past interactions, user preferences, or intermediate task results and add them back to context when needed. Not every agent uses every type of memory; memory is designed according to the use case.
 
-- **Short-Term Memory:** The agent's ability to keep track of the immediate flow of the current conversation or task. This refers to the context window of AI models. The chat history with the user is fed back to the model with each new request. This ensures that what happened in the previous sentence is not forgotten.
+| Approach | What it stores | Typical use |
+|---|---|---|
+| **Short-term context** | Messages and intermediate results from the current conversation | Maintaining consistency within one session |
+| **Persistent memory** | Confirmed preferences or information needed across sessions | Retrieving relevant information in later conversations |
+| **Episodic memory** | Results and validated lessons from specific tasks | Referencing a past result in a similar task |
+| **Shared memory** | Task state used by multiple agents | Multi-agent coordination |
 
-- **Long-Term Memory:** The agent's ability to recall information learned in the past, user preferences, and historical data even after tasks or sessions have ended. Data is stored in vector or relational databases. When the agent receives a new task, it retrieves past information from the database using semantic search.
-
-- **Episodic Memory:** The agent's ability to store specific past actions, scenarios, and lessons learned (successes or failures) from those scenarios as memories.
-
-- **Shared Memory:** A common knowledge pool shared among different agents in multi-agent architectures.
+This information is usually stored in relational, document, or vector databases. Instead of sending everything to the model, the application should add only information relevant to the current task.
 
 ### Autonomy
 
-The agent's freedom to make decisions and take actions in line with given tasks without requiring human intervention or approval mechanisms at every step.
+The ability of an agent to make some decisions without step-by-step human direction while operating within defined tools and policies. Autonomy does not mean unlimited authority: high-risk actions require authorization, validation, and often human approval.
 
 ## Types of AI Agents
 
@@ -139,61 +152,92 @@ Agents are divided into 2 types based on their ability to communicate with the u
 
 ## Differences Between Chatbots and AI Agents
 
-The key differences between AI agents and standard chatbots lie in their level of autonomy, capacity to manage complex tasks, learning abilities, and how they approach goals.
+"Chatbot" describes a conversational interface or application style, while "AI agent" describes a system that combines a model, tools, and an execution loop for a goal. The concepts are not mutually exclusive: a chatbot can be backed by an AI agent. The comparison below is between traditional rule-based chatbots and modern tool-using agent systems.
 
 ### Autonomy and Interaction Type
 
-- **Chatbot:** Low autonomy. They work reactively. They require pre-programmed commands, triggers, or user input to take action.
-- **AI Agent:** Autonomous and proactive. They can make independent decisions and take action to complete tasks toward a final goal without needing step-by-step human planning or intervention.
+- **Traditional Chatbot:** Usually runs a predefined response or flow in reaction to user input.
+- **AI Agent:** Can break down a goal and dynamically select among permitted tools within configured boundaries.
 
 ### Reasoning and Task Planning
 
-- **Chatbot:** They operate with rule-based or scripted logic. They respond by stringing together the most statistically appropriate words for the given input. They have no long-term plan.
-- **AI Agent:** They have advanced reasoning and strategic planning capabilities. They use thought templates (e.g., ReAct). They break complex tasks into sub-tasks and can flexibly adapt by interacting with their external environment based on changing conditions.
+- **Traditional Chatbot:** Follows rule-based or scripted conversation flows; dynamic task planning is limited.
+- **AI Agent:** Can split a complex task into smaller steps and adjust the next step based on tool results.
 
 ### Memory, Learning, and Personalization
 
-- **Chatbot:** They generally have no memory and limited learning abilities. This deficiency prevents them from personalizing the user experience and learning from their mistakes.
-- **AI Agent:** They possess 4 types of memory that can store past interactions. This allows them to self-improve their performance, learn from user behavior, and offer increasingly higher levels of personalized experiences over time.
+- **Traditional Chatbot:** Often does not retain persistent context across sessions.
+- **AI Agent:** Depending on its design, it can use session history, persistent preferences, or shared task state. Adding memory does not mean the model automatically learns or always behaves correctly.
 
 ### Tool/Function Calling
 
-- **Chatbot:** They cannot access external tools or systems to compensate for their lack of knowledge.
-- **AI Agent:** They can autonomously access external tools or systems to interact with the outside world and keep themselves updated.
+- **Traditional Chatbot:** Usually responds within its predefined conversation flow.
+- **AI Agent:** Can retrieve data or perform actions through tools explicitly provided and authorized by the application.
 
 ## Why an Agent Is Not Just a Prompt-Writing System
 
-The fundamental reason AI agents are not merely prompt-writing systems is that a prompt is a one-time, passive instruction, whereas an agent is an autonomous architecture capable of achieving its own goals, making decisions, using external tools, and interacting with its environment.
+A prompt is only one of the inputs supplied to a model. An agent is a software system that manages model calls, tools, state, and safety controls in an execution loop.
 
-The key differences that distinguish an AI agent from a simple prompt-based system:
+- **Trigger:** An agent can be invoked by a user message, API request, scheduled job, or system event.
+- **State:** It can preserve task state through sessions, conversation history, or persistent context providers.
+- **Action:** It can interact with external systems in a controlled way through defined tools.
+- **Loop:** The model returns text or a tool call; the tool result is sent back to the model until a final answer or configured limit is reached.
+- **Boundaries:** The agent acts only within the authorization, validation, and approval rules defined by the application.
 
-One of the most important differences is that prompt creation and processing is only a sub-component of the agent architecture, not the entirety of it. A goal-driven agent generates its own prompts instead of waiting for external prompts.
-
-A prompt is a command that only tells the model what to do at a specific moment and depends on human intervention. Agents, on the other hand, are fully autonomous; they make and execute the decisions needed to achieve their goals.
-
-Prompt-based interactions are typically stateless by nature — the system has no obligation to remember history. Each command is processed as if seen for the first time. AI agents, however, have multi-structured memory systems, including 4 types of memory. This allows them to maintain context throughout a task, learn from past actions, and act according to the current state.
-
-A prompt is merely a text string confined within the language model, unable to be affected by the outside world. Agents are autonomous structures connected to external applications and systems.
-
-A prompt is singular and instantaneous. A single response is produced for the given command, and the process ends. Agents, through paradigms like ReAct, continuously operate in a perception, decision, and action loop.
-
-In summary, a prompt is a static, text-based command that tells a model what to do, while an AI agent is complex software that organizes these commands on its own, updates its state, and exchanges data with the outside world.
+In summary, a prompt is an instruction given to a model; an agent is the software system that runs that instruction together with a model, tools, state management, and safety controls.
 
 ## Core Components of Agent Architecture
 
-**Agent:** An autonomous system that can perceive its environment, make decisions, and take action in the external world to achieve a specific goal. Each agent has its own role, internal state, and objective.
+**Agent:** A system that manages model calls and, when needed, tool use for a specific objective. It can have a role, instructions, target, and permission boundaries.
 
-**Tool:** External resources or functions that agents use to interact with the outside world and expand their capabilities. They can use tools such as databases, web searches, APIs, graphical or programmatic interfaces, or other agents to access up-to-date information or perform digital actions. The autonomous invocation and use of these tools (tool calling) enables agents to solve real-world problems.
+**Tool:** A controlled function an agent can use to interact with the outside world and extend its capabilities. Tools can provide access to databases, web search, APIs, or other agents for current information or digital actions. The model requests a tool call; the agent runtime or application layer manages execution and security checks.
 
-**Memory:** The core component that allows agents to maintain context throughout a task, learn from past experiences, and improve over time by adapting. This mechanism prevents agents from repeating mistakes, adapts to user preferences, and enables more accurate, personalized behavior.
+**Session and Memory:** A session associates messages and state within the same conversation or task. Persistent memory can store selected information across sessions and add it back to context when needed. Memory does not guarantee that the agent learns automatically or never repeats mistakes.
 
-**Workflow:** The autonomous sequence of task steps that an agent designs and orders to solve a complex problem and achieve its goal. The process begins with creating a plan, breaking the task into subtasks, and taking action. Workflows can be managed by reasoning paradigms and may also encompass multi-agent systems.
+**Workflow:** A process whose steps, ordering, branches, and approval points are defined more explicitly by the developer. It can combine agents, ordinary functions, human input, and external systems.
 
-**MCP:** An open-source, standardized communication protocol that enables AI applications to connect to external systems, data sources, and tools.
+**MCP:** An open protocol that gives AI applications a standard way to connect to tools and data sources exposed by external systems. It is not itself a tool and is not required for every agent.
 
-**In summary:** An AI agent is an integrated system that brings together all of the above components. The LLM is the agent's brain, Tools are its hands reaching into the outside world, Memory provides context and history, Workflow defines the path to follow, and MCP acts as the nervous system communicating with all external systems.
+**In summary:** A basic agent combines a model with instructions and an execution loop. Tools, session/memory, workflows, and MCP are added when the use case needs them.
 
-> **Agent = LLM + Tools + Memory + Workflow + MCP**
+> **Basic Agent = Model + Instructions + Execution Loop**
+>
+> **Optional: + Tools + Session/Memory + Workflow + MCP**
+
+### Tool vs MCP vs Workflow
+
+| Concept | Primary role | Who decides? | Required? |
+|---|---|---|---|
+| **Tool** | Provides a specific capability such as querying an order or creating a calendar event | The model can request it; the application checks permission and executes it | No |
+| **MCP** | Provides standard client-server communication for tools, resources, and prompts | The Host manages the connection; the model can select an appropriate tool | No |
+| **Workflow** | Organizes step order, branches, and approval points | Developers define the boundaries; an agent may decide within some steps | No |
+
+In short: a **Tool is the capability**, **MCP is a standard way to connect to it**, and a **Workflow defines the order of the work.**
+
+### How Does an Agent Answer a User?
+
+```mermaid
+flowchart TD
+    A["User message or system trigger"] --> B["Backend / Agent Runtime"]
+    B --> C["Instructions + Session + Tool definitions"]
+    C --> D["LLM call"]
+    D --> E{"Is a tool needed?"}
+    E -- "No" --> H["Final answer"]
+    E -- "Yes" --> F["Authorization and parameter validation"]
+    F --> G["Tool runs directly or through MCP"]
+    G --> I["Tool result is added to context"]
+    I --> D
+    H --> J["Answer is returned to the user"]
+```
+
+1. A user message, API request, or system event triggers the agent.
+2. The runtime sends the agent instructions, relevant session history, and available tool definitions to the model.
+3. The model can answer directly or request a tool call with specific parameters.
+4. If a tool is needed, the application validates authorization and parameters, then runs it as a normal function or through MCP.
+5. The tool result is sent back to the model. The model either requests another tool or produces the final answer.
+6. The runtime returns the answer and, depending on configuration, stores session state and observability records.
+
+The model does not connect directly to a database or enterprise system. It requests a call; the application, agent runtime, or MCP Server performs the real access and security checks.
 
 ### Example: End-to-End Agent Flow
 
@@ -201,51 +245,42 @@ A walkthrough of an agent's steps when handling the request *"Schedule a meeting
 
 **1. Goal Analysis and Planning** — The agent receives the request and breaks the complex task into subtasks: (a) check calendar availability, (b) search for flights, (c) create the meeting.
 
-**2. ReAct Loop (Think - Act - Observe)**
+**2. Observable Action Loop (Action - Observation - Next Step)**
 
 ```
-Thought: The user wants a meeting in Istanbul tomorrow. I need to check their calendar first.
+Next step: Check the calendar before selecting a meeting time.
 Action: check_calendar(date: "tomorrow", user: "me")
         → Connects to Calendar API via MCP
 Observation: 09:00-11:00 is free, 14:00-15:30 is free
 
-Thought: The morning flight and meeting slot align with 09:00-11:00.
-         Now I should search for Ankara-Istanbul flights.
+Next step: Search for Ankara-Istanbul flights that fit the available time.
 Action: search_flights(departure: "Ankara", arrival: "Istanbul", date: "tomorrow")
         → Connects to Flight API via MCP
 Observation: 3 flights found — 07:00 ($210), 10:00 ($340), 16:00 ($170)
 
-Thought: The 07:00 flight arrives by 09:00, second cheapest.
-         10:00 flight won't make it in time. 16:00 is cheap but too late.
-         Best option: 07:00 flight + 09:00-10:30 meeting.
+Decision summary: The 07:00 flight is compatible with the available meeting slot.
 Action: create_event(date: "tomorrow", time: "09:00-10:30", title: "Meeting")
         → Writes to Calendar API via MCP
 Observation: Meeting created.
-
-Thought: The user has always preferred morning flights in the past (long-term memory).
-         Saving this preference will be useful for future requests.
-Action: save_preference(preference: "morning flight")
-        → Writes to memory database
-Observation: Preference saved.
 ```
 
 **3. Result** — The agent produces the following response for the user:
 
-> *"I've booked the 07:00 Ankara-Istanbul flight and scheduled a meeting from 09:00-10:30 tomorrow. Total: $210."*
+> *"I scheduled the meeting for 09:00-10:30 tomorrow. I found the 07:00 Ankara-Istanbul flight as a suitable option; it costs $210. I did not purchase the ticket."*
 
 This example demonstrates multiple mechanisms working simultaneously in an AI agent:
 - **Planning:** Breaking the task into subtasks
-- **ReAct Loop:** Thought → Action → Observation steps
+- **Tool Loop:** Action → Observation → Next Step
 - **Tool Calling + MCP:** Connecting to external APIs (Calendar, Flight)
-- **Memory:** Recalling past preferences and saving new information
+- **Session/Memory:** Adding conversation history or previously confirmed preferences to context when needed
 
 ## MCP (Model Context Protocol)
 
-It works like a universal USB-C that connects electronic devices. It enables AI models to interact with external systems in a standardized way.
+It can be compared to USB-C, which gives different devices a common connection standard. MCP gives AI applications a standard way to communicate with tools and data sources exposed by external systems.
 
-The biggest limitation of Large Language Models (LLMs) is that they are static — confined to the data they were trained on and unable to autonomously communicate with the outside world. MCP acts as a bridge that removes these limitations.
+A language model does not connect to a database, file system, or enterprise API by itself. The application layer provides those capabilities. MCP creates a standard communication layer between the application and a tool or data source.
 
-MCP is one of the key standards that allows AI to break free from dependence on static training data, pull real-time data from external sources, fill knowledge gaps, and keep itself updated. However, MCP is not a closed box limited to LLMs; it is a fully open-source and universal protocol.
+With MCP, different tools can be exposed through a common protocol instead of requiring a different integration shape for every application. An agent can retrieve current data or perform permitted actions. MCP does not guarantee correctness or eliminate hallucinations.
 
 ### Core Architecture and How It Works
 
@@ -253,28 +288,28 @@ It consists of 3 main components:
 
 **MCP Host:** The layer where the model and user interact. It hosts the LLM and the interface the user interacts with. It runs one or more MCP Clients in the background.
 
-**MCP Client:** Runs inside the Host. It translates the model's requests into a format MCP understands, and MCP's requests into a format the model understands. It also discovers available MCP servers. It typically runs as a library or SDK embedded within the agent framework being used.
+**MCP Client:** Runs inside the Host and manages a connection to a specific MCP Server. During initialization it negotiates the protocol version and supported capabilities, then lists exposed tools, resources, and prompt templates and carries requests between the Host and Server.
 
-**MCP Server:** An external service that provides context, data, or external tool capabilities to the LLM. These are small, isolated services that translate external data sources or tools into the common language understood by the protocol.
+**MCP Server:** A service that exposes tools, resources, or reusable prompt templates through MCP. It can run as a local process or over a network; the server performs the actual interaction with its underlying API, file system, or database.
 
 ### Transport Layer
 
-Communication between the MCP client and server is carried out via JSON-RPC 2.0 messages. There are two transport methods:
+Communication between the MCP client and server uses JSON-RPC messages. The current specification defines two standard transport methods:
 
-**Stdio (Standard Input/Output):** The client launches the MCP server as a separate subprocess on the same machine. Communication occurs through standard input/output channels. Because message passing follows a simple I/O pattern, it is fast and synchronous. Ideal for accessing local resources such as file systems, databases, and local APIs. Since data exchange stays within the machine, it offers higher security and privacy for sensitive data scenarios or offline applications.
+**Stdio (Standard Input/Output):** The client usually launches the MCP server as a subprocess on the same machine. JSON-RPC messages travel over standard input and output. It is suitable for local integrations such as development tools and file systems. Local execution alone is not a security guarantee; process permissions still need to be restricted.
 
-**SSE (Server-Sent Events):** The client and server connect over HTTP. Messages from the client to the server are sent via HTTP POST requests, while data flow from the server to the client is handled through SSE. Its asynchronous, event-driven architecture allows it to manage multiple server calls simultaneously. Preferred for connecting to remote resources over the internet. Since multiple AI applications can access the same server, it provides high flexibility and scalability; ideal for building shared, multi-user tools.
+**Streamable HTTP:** The MCP server runs as an independent service and clients connect to a single HTTP endpoint. Client messages are sent through HTTP POST; the server can return a normal JSON response or optionally use Server-Sent Events (SSE) for streaming. It is suitable for remote and multi-user services. Authentication, authorization, `Origin` validation, and secure network configuration must be implemented separately.
 
-**In summary:** **Stdio** is used for fast, synchronous access to local resources, while **SSE** provides real-time, reliable connections to remote resources over the internet.
+The older **HTTP+SSE** transport from protocol version `2024-11-05` was replaced by **Streamable HTTP**. Backward compatibility can still be provided for older clients and servers.
 
-#### Stdio vs SSE Comparison
+#### Stdio vs Streamable HTTP Comparison
 
-| Feature | Stdio | SSE |
+| Feature | Stdio | Streamable HTTP |
 |---|---|---|
 | **Resource Location** | Local (machine-internal) | Remote (network/internet) |
-| **Communication Type** | Synchronous, simple I/O | Asynchronous, event-driven |
-| **Speed/Latency** | Low latency, high speed | Real-time streaming |
-| **Security** | High (stays within machine) | Requires network connection |
+| **Communication Type** | JSON-RPC over standard input/output | HTTP POST/GET; optional SSE streaming |
+| **Execution Model** | Local subprocess launched by the client | Independent server that can serve multiple clients |
+| **Security** | Depends on operating-system process and file permissions | Requires authentication, authorization, and `Origin` validation |
 | **Scalability** | Single-machine only | Accessible by multiple applications |
 | **Use Case** | Local file system, database, IDE | Remote APIs, cloud services |
 
@@ -282,62 +317,62 @@ Communication between the MCP client and server is carried out via JSON-RPC 2.0 
 
 MCP provides three fundamental building blocks for agents to interact with the outside world:
 
-- **Tools:** Functions that the agent can call autonomously. They define actions such as running a database query, fetching weather data, or creating a file. The agent selects and invokes these tools when needed and uses the result directly. Two-way (call + response).
+- **Tools:** Functions the model can select based on context and the MCP Server executes. They define actions such as running a database query, fetching weather data, or creating a file. The Host can require permission or human approval before execution.
 
-- **Resources:** Static or dynamic data sources that the agent can read. They represent data such as file contents, database tables, API documentation, or log files. Served by the server, read by the agent. One-way (read-only).
+- **Resources:** Readable context such as file contents, schemas, documentation, or records. The server lists them, while the Host application usually controls which resources are added to context.
 
-- **Prompts:** Reusable prompt templates defined on the server side. They provide ready-made instruction patterns for frequently performed tasks. The user or agent can call these templates to quickly launch standardized tasks.
+- **Prompts:** Reusable instruction templates defined on the server side. They typically help a user initiate a standardized task.
 
 **In summary:** Tools provide agents with **action** capability, Resources provide **information** sources, and Prompts provide **ready-made instruction** templates.
 
 ### What It Provides and Why It Matters
 
-- Prevents LLMs from hallucinating (which occurs when relying solely on training data) by enabling connections to reliable, real-time external data sources.
-- Transforms AI from a mere text-generating chatbot into a system capable of true autonomy.
-- Eliminates fragmented integration efforts by providing a single, standard protocol. This reduces development time, costs, and complexity.
-- Being standard and open-source, it enables model switching without requiring major changes to the host system.
+- Can reduce reliance on training data and lower hallucination risk by providing controlled access to current or enterprise data; it does not guarantee correctness.
+- Lets tools and data sources be exposed to different AI applications through a common protocol.
+- Can reduce development effort and integration complexity through reusable connections.
+- Reduces coupling between application, model, and tool layers, but does not guarantee model or infrastructure changes will require no code changes.
 
 ## Microsoft Agent Framework
 
-Microsoft Agent Framework is an open-source framework designed for building, orchestrating, and deploying autonomous AI agents and multi-agent workflows into production environments.
+Microsoft Agent Framework is an open-source, multi-language development framework for building, orchestrating, observing, and running AI agents and multi-agent workflows in production. Its primary ecosystems are .NET and Python; Go support is in public preview.
 
-AI agents are developed to overcome the static nature of LLMs and manage complex processes autonomously. Microsoft Agent Framework is the set of tools and services used to develop and manage these agents.
+The framework brings model clients, instructions, tools, sessions, persistent context, middleware, and workflows under a common programming model.
 
-The main goal is to build autonomous systems that perform complex tasks — going beyond one-time commands to interact with external systems, maintain memory, and solve complex problems autonomously.
+Its goal is to support applications that go beyond one-off, stateless model calls by interacting with external systems in a controlled way, managing multi-step tasks, and addressing production requirements.
 
 ### Relationship with Semantic Kernel and AutoGen
 
-Microsoft Agent Framework is the direct successor of two previous Microsoft AI agent frameworks: Semantic Kernel and AutoGen. It builds upon the foundations of both, unifying their strengths into a single platform.
+Microsoft Agent Framework is a new foundation developed using experience from the AutoGen and Semantic Kernel teams. Rather than describing it as a literal merger of two packages or as "Semantic Kernel 2.0," it is more accurate to view it as an evolution of ideas from those projects into a production-oriented common programming model.
 
-**AutoGen** was an experimental framework developed by Microsoft Research's AI Frontiers Lab, focused on multi-agent orchestration. It allowed developers to create agents in just a few lines of code and implement advanced multi-agent patterns such as group chat, reflection, and facilitator/worker setups. However, due to its experimental nature, it lacked enterprise-grade features like observability, security, official support, and long-term stability. AutoGen is now in maintenance mode — no new features are being developed, and it is managed by the community. Microsoft recommends Microsoft Agent Framework for new projects and encourages existing AutoGen users to migrate.
+**AutoGen** introduced influential agent and multi-agent orchestration concepts. Microsoft publishes an official migration guide for moving existing AutoGen projects to Agent Framework.
 
-**Semantic Kernel** is a production-ready SDK designed for enterprise applications, supporting .NET, Python, and Java. It offered enterprise features such as telemetry (distributed tracing via OpenTelemetry), middleware (intercepting request/response flows), type safety, session-based state management, and broad database and model provider support. While ideal for production environments, it was not as flexible or rich as AutoGen when it came to multi-agent orchestration. Semantic Kernel will continue to receive critical bug fixes and security updates, but most new features will be added to Microsoft Agent Framework. One way to think about it: Semantic Kernel is v1.x, while Microsoft Agent Framework is v2.0 of the same vision.
-
-**Microsoft Agent Framework** combines AutoGen's simple and flexible agent creation capabilities with Semantic Kernel's enterprise-grade robust infrastructure under a single roof. It is developed by the same team behind both frameworks and is built on all the experience and feedback gathered from Semantic Kernel and AutoGen.
+**Semantic Kernel** provided important foundations for model clients, tool integration, and enterprise application patterns. Semantic Kernel and Agent Framework are separate projects; support and migration decisions should be verified against official documentation for the versions and requirements in use.
 
 ### Core Architectural Components
 
-The framework's architecture is built on two main components to handle tasks of varying complexity:
+Agents and Workflows sit at the center of the framework, supported by sessions, context providers, middleware, hosting, and observability:
 
-**Agents:** Autonomous units that use large language models as their "brain" to process inputs, use external tools, and generate autonomous responses. They are used in open-ended, conversation-based scenarios where the agent needs to select its own tools and make autonomous decisions. Supports various model providers including Microsoft Foundry, Azure OpenAI, Anthropic, and Ollama.
+**Agents:** Combine a model client with instructions, tools, and an execution loop. They are useful for open-ended or conversational tasks where tool selection depends on context.
 
 **Workflows:** Connect multiple agents, human interactions, and external systems in a graph-based structure for multi-step tasks. Used when tasks have clear steps and precise control over execution order is required.
 
-#### Workflow API Types
+**Sessions and Context Providers:** Manage conversation history, task state, and persistent context when needed. A session alone does not guarantee durable storage; appropriate history/context providers and storage must be configured.
 
-Workflows offer 2 different APIs:
+**Agent Harness:** Bundles capabilities for long-running, multi-step tasks, including the tool-calling loop, context management, plans and todo tracking, file access, observability, and tool approval.
 
-**Functional API:** The most natural and simple method, designed using standard code loops. Uses decorators such as `@workflow` and `@step` for control flow. Preferred when operations are mostly sequential, have specific loops, or need to be solved with straightforward logic.
+**Hosting:** Runs an agent or workflow in a web application, service, or container and exposes it through an application interface.
 
-**Graph API:** An advanced method where the process is drawn with strict boundaries as a directed graph. Agents or custom logic are defined as "executors," and message paths between them are defined as "edges." Which agent receives which message is enforced through strict type validation. This API is preferred when the process architecture is fixed, tasks are highly detailed, and strict message routing rules are needed.
+#### Workflow Approaches
+
+Programmatic workflows connect executors and the message routes between them as edges in a directed graph. The framework provides orchestration patterns such as sequential, concurrent, handoff, and group collaboration. Because supported APIs and declarative options can vary by SDK language and version, implementation details should be checked against the current official documentation.
 
 ### MCP Support
 
-MAF supports MCP (Model Context Protocol), enabling agents to connect to external data sources, applications, and tools in a standard and secure way.
+MAF supports connecting agents to tools and resources exposed by MCP servers. Security is not automatic: authentication, authorization, and tool permissions must be configured by the application.
 
 ### Enterprise-Ready Production Features
 
-To take agents from prototype to production with confidence, MAF inherits the following enterprise capabilities from Semantic Kernel:
+Key capabilities for moving agents from prototype to production include:
 
 **Checkpointing:** Prevents long-running processes from being lost entirely. The system saves its current state, allowing the process to be recovered and resumed from where it left off.
 
@@ -349,46 +384,44 @@ To take agents from prototype to production with confidence, MAF inherits the fo
 
 ## Differences Between ChatGPT and Microsoft Agent Framework
 
-Although both use artificial intelligence, ChatGPT and Microsoft Agent Framework are fundamentally different tools in terms of purpose, level of control, and use cases.
+This compares a product with a software development framework. Because features vary by plan, version, and configuration, categorical statements such as "ChatGPT cannot use tools" or "ChatGPT has no memory" are not accurate.
 
 ### Purpose
-ChatGPT is a general-purpose conversational product developed by OpenAI. The user enters a prompt and the model generates a response. Microsoft Agent Framework, on the other hand, is a development framework designed for developers to build their own autonomous agents.
+ChatGPT is a hosted product used by end users for conversation, content generation, research, and supported tool-based tasks. Microsoft Agent Framework is an SDK/framework for developers building custom agents and workflows into their own applications.
 
 ### Control and Customization
-ChatGPT is a closed product. Users cannot change the model, tools, or behavior rules. In MAF, everything is open and customizable: which model to use, which tools to call, agent instructions, middleware layers, and workflows are all under the developer's control.
+The models, apps, tools, memory, and agent features available in ChatGPT depend on product options and workspace policies. With MAF, developers configure the model provider, instructions, tools, middleware, sessions, workflows, storage, and hosting architecture.
 
-### Autonomy
-ChatGPT operates reactively. Every response depends on a user prompt. It can call tools (functions/plugins), but only when the user requests it, not on its own initiative. It cannot make plans or progress step by step toward a goal autonomously. MAF agents are proactive; through paradigms like ReAct, they work autonomously in a think-act-observe loop, use external tools, and manage steps themselves until reaching the goal.
+### Execution and Hosting
+OpenAI manages ChatGPT's product environment and infrastructure. For a MAF application, the developer or organization is responsible for the API, service or container, identity, data storage, monitoring, and deployment.
 
-### Multi-Agent Support
-ChatGPT offers a single-user, single-assistant experience. MAF enables building multi-agent systems where multiple agents communicate, specialize, and collaborate toward a common goal.
-
-### Memory
-ChatGPT has session-based short-term memory. When the session ends, the history is lost. In MAF, memory is configurable and persistent, supporting four types: short-term, long-term, episodic, and shared memory.
-
-### Enterprise Features
-ChatGPT has limited control mechanisms for enterprise use. MAF offers a production-ready infrastructure with features like checkpointing, observability, middleware, and human-in-the-loop.
+### Tools, Memory, and Agent Features
+Depending on plan and configuration, ChatGPT can provide apps, tools, memory, and reusable agent experiences. MAF provides tools, MCP, sessions, context providers, workflows, and multi-agent orchestration, which developers assemble according to their own security and business rules.
 
 ### Use Case
-ChatGPT is suitable for quick information retrieval, brainstorming, and general-purpose conversation. MAF is preferred for applications that need to autonomously execute specific business processes, integrate with external systems, and meet enterprise requirements.
+Choose ChatGPT when a ready-to-use AI product fits the need. Consider Microsoft Agent Framework when developer control over application code, business rules, integrations, and deployment architecture is required.
 
 | Feature | ChatGPT | Microsoft Agent Framework |
 |---|---|---|
-| **Purpose** | General-purpose conversational product | Autonomous agent development framework |
-| **Control** | Closed product, not customizable | Fully open and customizable |
-| **Autonomy** | Reactive, depends on user prompts | Proactive, autonomous via ReAct loop |
-| **Multi-Agent** | Single-user, single assistant | Multi-agent, specialization & collaboration |
-| **Memory** | Session-based, short-term | 4 types: short/long-term, episodic, shared |
-| **Enterprise** | Limited control mechanisms | Checkpointing, observability, middleware, HITL |
-| **Use Case** | Quick info, brainstorming, chat | Autonomous workflows, system integration |
+| **Type** | Hosted end-user product | Open-source development framework |
+| **Configuration** | Options exposed by the product and plan | Application architecture controlled by developers |
+| **Tools and Data** | Apps and connections supported by the product | Custom functions, MCP, and enterprise integrations |
+| **State/Memory** | Depends on product settings and plan | Configured with sessions and context/history providers |
+| **Workflow** | Task and agent experiences provided by the product | Code-defined workflows and multi-agent orchestration |
+| **Hosting** | Managed by OpenAI | Managed by the developer or organization |
 
 ## References & Further Reading
 
 - [Microsoft Agent Framework (GitHub)](https://github.com/microsoft/agent-framework)
-- [Microsoft Agent Framework Workflows](https://learn.microsoft.com/tr-tr/agent-framework/workflows/)
+- [Microsoft Agent Framework — Get Started](https://learn.microsoft.com/en-us/agent-framework/get-started/)
+- [Microsoft Agent Framework — Agent Harness](https://learn.microsoft.com/en-us/agent-framework/agents/harness)
+- [Microsoft Agent Framework — AutoGen Migration Guide](https://learn.microsoft.com/en-us/agent-framework/migration-guide/from-autogen/)
 - [Semantic Kernel (Microsoft)](https://learn.microsoft.com/en-us/semantic-kernel/)
 - [AutoGen (Microsoft Research)](https://github.com/microsoft/autogen)
 - [Model Context Protocol (MCP) — Getting Started](https://modelcontextprotocol.io/docs/getting-started/intro)
+- [Model Context Protocol (MCP) — Transports](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports)
+- [Apps in ChatGPT](https://help.openai.com/en/articles/11487775/connectors-in)
+- [Memory FAQ — ChatGPT](https://help.openai.com/en/articles/8590148-memory-faq.)
 - [What Are Large Language Models? (IBM)](https://www.ibm.com/think/topics/large-language-models)
 - [What is a Large Language Model? (Stanford HAI)](https://hai.stanford.edu/ai-definitions/what-is-a-llm)
 - [What Are AI Agents? (Google Cloud)](https://cloud.google.com/discover/what-are-ai-agents)
